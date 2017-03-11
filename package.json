@@ -1,11 +1,14 @@
 {
   "name": "dynamodb-geo",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "A javascript port of awslabs/dynamodb-geo, for dynamodb geospatial querying",
   "scripts": {
-    "build": "tsc"
+    "prepublish": "tsc -d",
+    "clean": "rm -rf dist",
+    "build": "tsc -d"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "rh389/dynamodb-geo.js",
   "author": "Rob Hogan <github@rhogan.net>",
   "license": "Apache-2.0",

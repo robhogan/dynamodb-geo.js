@@ -13,18 +13,19 @@
  * permissions and limitations under the License.
  */
 
-import { DynamoDB } from "aws-sdk";
+import { AWSError, DynamoDB, Request } from "aws-sdk";
 import { DynamoDBManager } from "./dynamodb/DynamoDBManager";
 import { GeoDataManagerConfiguration } from "./GeoDataManagerConfiguration";
 import {
-  DeletePointInput,
+  BatchWritePointOutput,
+  DeletePointInput, DeletePointOutput,
   GeoPoint,
   GeoQueryInput,
-  GetPointInput,
-  PutPointInput,
+  GetPointInput, GetPointOutput,
+  PutPointInput, PutPointOutput,
   QueryRadiusInput,
   QueryRectangleInput,
-  UpdatePointInput
+  UpdatePointInput, UpdatePointOutput
 } from "./types";
 import { S2CellId, S2CellUnion, S2LatLng, S2LatLngRect } from "nodes2ts";
 import { S2Manager } from "./s2/S2Manager";
@@ -107,7 +108,7 @@ export class GeoDataManager {
    *
    * @return Result of put point request.
    */
-  public putPoint(putPointInput: PutPointInput) {
+  public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
     return this.dynamoDBManager.putPoint(putPointInput);
   }
 
@@ -136,7 +137,7 @@ export class GeoDataManager {
    *
    * @return Result of batch put point request.
    */
-  public batchWritePoints(putPointInputs: PutPointInput[]) {
+  public batchWritePoints(putPointInputs: PutPointInput[]): Request<BatchWritePointOutput, AWSError> {
     return this.dynamoDBManager.batchWritePoints(putPointInputs);
   }
 
@@ -161,7 +162,7 @@ export class GeoDataManager {
    *
    * @return Result of get point request.
    * */
-  public getPoint(getPointInput: GetPointInput) {
+  public getPoint(getPointInput: GetPointInput): Request<GetPointOutput, AWSError> {
     return this.dynamoDBManager.getPoint(getPointInput);
   }
 
@@ -190,7 +191,7 @@ export class GeoDataManager {
    *
    * @return Result of rectangle query request.
    */
-  public queryRectangle(queryRectangleInput: QueryRectangleInput) {
+  public queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList[]>[] {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(queryRectangleInput);
 
     const cellUnion: S2CellUnion = S2Manager.findCellIds(latLngRect);
@@ -222,7 +223,7 @@ export class GeoDataManager {
    *
    * @return Result of radius query request.
    * */
-  public queryRadius(queryRadiusInput: QueryRadiusInput) {
+  public queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList[]>[] {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(queryRadiusInput);
 
     const cellUnion: S2CellUnion = S2Manager.findCellIds(latLngRect);
@@ -261,7 +262,7 @@ export class GeoDataManager {
    *
    * @return Result of update point request.
    */
-  public updatePoint(updatePointInput: UpdatePointInput) {
+  public updatePoint(updatePointInput: UpdatePointInput): Request<UpdatePointOutput, AWSError> {
     return this.dynamoDBManager.updatePoint(updatePointInput);
   }
 
@@ -286,7 +287,7 @@ export class GeoDataManager {
    *
    * @return Result of delete point request.
    */
-  public deletePoint(deletePointInput: DeletePointInput) {
+  public deletePoint(deletePointInput: DeletePointInput): Request<DeletePointOutput, AWSError> {
     return this.dynamoDBManager.deletePoint(deletePointInput);
   }
 
