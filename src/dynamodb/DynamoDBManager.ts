@@ -88,7 +88,7 @@ export class DynamoDBManager {
 
   public getPoint(getPointInput: GetPointInput): Request<GetPointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(getPointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
 
     const getItemInput = getPointInput.GetItemInput;
     getItemInput.TableName = this.config.tableName;
@@ -103,7 +103,7 @@ export class DynamoDBManager {
 
   public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
     const putItemInput = putPointInput.PutItemInput;
 
     putItemInput.TableName = this.config.tableName;
@@ -134,7 +134,7 @@ export class DynamoDBManager {
     const writeInputs: DynamoDB.WriteRequest[] = [];
     putPointInputs.forEach(putPointInput => {
       const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
-      const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
+      const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
       const putItemInput = putPointInput.PutItemInput;
 
       if (!putItemInput.Item) {
@@ -165,7 +165,7 @@ export class DynamoDBManager {
 
   public updatePoint(updatePointInput: UpdatePointInput): Request<UpdatePointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(updatePointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
 
     updatePointInput.UpdateItemInput.TableName = this.config.tableName;
 
@@ -187,7 +187,7 @@ export class DynamoDBManager {
 
   public deletePoint(deletePointInput: DeletePointInput): Request<DeletePointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(deletePointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
 
     deletePointInput.DeleteItemInput.TableName = this.config.tableName;
 
