@@ -370,7 +370,7 @@ export class GeoDataManager {
     let radiusInMeter = 0;
     if (geoQueryInput.hasOwnProperty('MinPoint')) {
       latLngRect = S2Util.getBoundingLatLngRect(geoQueryInput);
-    } else if (geoQueryInput.hasOwnProperty('Radius')) {
+    } else if (geoQueryInput.hasOwnProperty('RadiusInMeter')) {
       const centerPoint: GeoPoint = (geoQueryInput as QueryRadiusInput).CenterPoint;
       centerLatLng = S2LatLng.fromDegrees(centerPoint.latitude, centerPoint.longitude);
       radiusInMeter = (geoQueryInput as QueryRadiusInput).RadiusInMeter;

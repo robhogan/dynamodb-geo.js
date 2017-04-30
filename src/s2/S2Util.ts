@@ -41,7 +41,7 @@ export class S2Util {
 			}
 
 			return latLngRect;
-		} else if (geoQueryRequest.hasOwnProperty('Radius')) {
+		} else if (geoQueryRequest.hasOwnProperty('RadiusInMeter')) {
 			const queryRadiusRequest = geoQueryRequest as QueryRadiusInput;
 
 			const centerPoint = queryRadiusRequest.CenterPoint;
