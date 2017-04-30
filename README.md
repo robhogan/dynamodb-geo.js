@@ -24,9 +24,6 @@ The library retrieves candidate Geo points from the cells that intersect the req
 ### High memory consumption
 Because all paginated `Query` results are loaded into memory and processed, it may consume substantial amounts of memory for large datasets.
 
-### The server is essential
-Because Geo Library calls multiple DynamoDB `Query` requests and processes the results in memory, it is not suitable for mobile device use. You should maintain a Java server, and use the library on the server.
-
 ### Dataset density limitation
 The Geohash used in this library is roughly centimeter precision. Therefore, the library is not suitable if your dataset has much higher density.
 
