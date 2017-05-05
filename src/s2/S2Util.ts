@@ -13,8 +13,9 @@
  * permissions and limitations under the License.
  */
 
-import { GeoQueryInput, QueryRadiusInput, QueryRectangleInput } from "../types";
+import { QueryRadiusInput, QueryRectangleInput } from "../types";
 import { S2LatLng, S2LatLngRect } from "nodes2ts";
+
 export class S2Util {
 
 	/**
@@ -24,7 +25,7 @@ export class S2Util {
 	 *            It contains all of the necessary information to form a latitude and longitude box.
 	 * 
 	 * */
-	public static getBoundingLatLngRect(geoQueryRequest: GeoQueryInput): S2LatLngRect {
+	public static getBoundingLatLngRect(geoQueryRequest: QueryRadiusInput | QueryRectangleInput): S2LatLngRect {
 		if (geoQueryRequest.hasOwnProperty('MinPoint')) {
 			const queryRectangleRequest = geoQueryRequest as QueryRectangleInput;
 
