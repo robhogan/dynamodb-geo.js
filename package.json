@@ -5,7 +5,8 @@
   "scripts": {
     "prepublish": "tsc -d",
     "clean": "rm -rf dist",
-    "build": "tsc -d"
+    "build": "tsc -d",
+    "test": "mocha --require ts-node/register test/**/*.ts"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,9 +19,14 @@
     "@types/long": ">=3",
     "@types/node": ">=4",
     "aws-sdk": "^2.27.0",
-    "nodes2ts": "^1.1.7"
+    "nodes2ts": "^1.1.9"
   },
   "devDependencies": {
+    "@types/chai": "^3.5.2",
+    "@types/mocha": "^2.2.41",
+    "chai": "^3.5.0",
+    "mocha": "^3.3.0",
+    "ts-node": "^3.0.2",
     "typescript": "^2.2.1"
   }
 }
