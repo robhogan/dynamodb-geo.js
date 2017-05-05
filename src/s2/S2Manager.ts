@@ -13,19 +13,11 @@
  * permissions and limitations under the License.
  */
 
-import { S2Cell, S2CellId, S2LatLng, S2LatLngRect } from "nodes2ts";
+import { S2Cell, S2LatLng } from "nodes2ts";
 import { GeoPoint } from "../types";
 import * as Long from "long";
 
 export class S2Manager {
-  private static containsGeodataToFind(c: S2CellId, latLngRect: S2LatLngRect) {
-    if (latLngRect != null) {
-      return latLngRect.intersects(new S2Cell(c));
-    }
-
-    return false;
-  }
-
   static generateGeohash(geoPoint: GeoPoint) {
     const latLng = S2LatLng.fromDegrees(geoPoint.latitude, geoPoint.longitude);
     const cell = S2Cell.fromLatLng(latLng);
