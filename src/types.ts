@@ -15,8 +15,8 @@ export interface GeoPoint {
   latitude: number;
   longitude: number;
 }
-export interface GeoQueryInput extends DynamoDB.QueryInput {
-
+export interface GeoQueryInput {
+  QueryInput?: DynamoDB.QueryInput;
 }
 export interface GeoQueryOutput extends DynamoDB.QueryOutput {
 }
@@ -37,7 +37,6 @@ export interface PutPointOutput extends DynamoDB.PutItemOutput {
 export interface QueryRadiusInput extends GeoQueryInput {
   RadiusInMeter: number;
   CenterPoint: GeoPoint;
-  QueryInput: DynamoDB.QueryInput;
 }
 export interface QueryRadiusOutput extends GeoQueryOutput {
 }

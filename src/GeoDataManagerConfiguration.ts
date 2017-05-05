@@ -13,6 +13,7 @@
  * permissions and limitations under the License.
  */
 import { DynamoDB } from "aws-sdk";
+import { S2RegionCoverer } from "nodes2ts";
 
 export class GeoDataManagerConfiguration {
 
@@ -35,8 +36,11 @@ export class GeoDataManagerConfiguration {
 
   dynamoDBClient: DynamoDB;
 
+  s2RegionCoverer: S2RegionCoverer;
+
   constructor(dynamoDBClient, tableName: string) {
     this.dynamoDBClient = dynamoDBClient;
     this.tableName = tableName;
+    this.s2RegionCoverer = new S2RegionCoverer();
   }
 }

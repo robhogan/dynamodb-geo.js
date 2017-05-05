@@ -18,19 +18,17 @@ import { DynamoDBManager } from "./dynamodb/DynamoDBManager";
 import { GeoDataManagerConfiguration } from "./GeoDataManagerConfiguration";
 import {
   BatchWritePointOutput,
-  DeletePointInput, DeletePointOutput,
-  GeoPoint,
-  GeoQueryInput,
+  DeletePointInput, DeletePointOutput, GeoPoint,
   GetPointInput, GetPointOutput,
   PutPointInput, PutPointOutput,
   QueryRadiusInput,
   QueryRectangleInput,
   UpdatePointInput, UpdatePointOutput
 } from "./types";
-import { S2CellId, S2CellUnion, S2LatLng, S2LatLngRect } from "nodes2ts";
 import { S2Manager } from "./s2/S2Manager";
 import { S2Util } from "./s2/S2Util";
 import { GeohashRange } from "./model/GeohashRange";
+import { S2LatLngRect, S2CellId, S2LatLng } from "nodes2ts";
 
 /**
  * <p>
@@ -191,12 +189,10 @@ export class GeoDataManager {
    *
    * @return Result of rectangle query request.
    */
-  public queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList[]>[] {
+  public queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(queryRectangleInput);
 
-    const cellUnion: S2CellUnion = S2Manager.findCellIds(latLngRect);
-
-    const ranges = this.mergeCells(cellUnion);
+    const ranges = this.config.s2RegionCoverer.getCoveringCells(latLngRect);
 
     return this.dispatchQueries(ranges, queryRectangleInput);
   }
@@ -223,14 +219,12 @@ export class GeoDataManager {
    *
    * @return Result of radius query request.
    * */
-  public queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList[]>[] {
+  public queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(queryRadiusInput);
 
-    const cellUnion: S2CellUnion = S2Manager.findCellIds(latLngRect);
+    const coveringCellIds = this.config.s2RegionCoverer.getCoveringCells(latLngRect);
 
-    const ranges = this.mergeCells(cellUnion);
-
-    return this.dispatchQueries(ranges, queryRadiusInput);
+    return this.dispatchQueries(coveringCellIds, queryRadiusInput);
   }
 
   /**
@@ -292,40 +286,9 @@ export class GeoDataManager {
   }
 
   /**
-   * Merge continuous cells in cellUnion and return a list of merged GeohashRanges.
-   *
-   * @param cellUnion
-   *            Container for multiple cells.
-   *
-   * @return A list of merged GeohashRanges.
-   */
-  private mergeCells(cellUnion: S2CellUnion) {
-
-    const ranges: GeohashRange[] = [];
-    let c: S2CellId, range: GeohashRange, wasMerged: boolean;
-    for (let i = 0; i < cellUnion.size(); i++) {
-      c = cellUnion.cellId(i);
-      range = new GeohashRange(c.rangeMin().id, c.rangeMax().id);
-
-      wasMerged = false;
-      ranges.forEach(r => {
-        if (r.tryMerge(range)) {
-          wasMerged = true;
-        }
-      });
-
-      if (!wasMerged) {
-        ranges.push(range);
-      }
-    }
-
-    return ranges;
-  }
-
-  /**
    * Query Amazon DynamoDB in parallel and filter the result.
    *
-   * @param ranges
+   * @param coveringCellIds
    *            A list of geohash ranges that will be used to query Amazon DynamoDB.
    *
    * @param latLngRect
@@ -333,21 +296,27 @@ export class GeoDataManager {
    *
    * @return Aggregated and filtered items returned from Amazon DynamoDB.
    */
-  private dispatchQueries(ranges: GeohashRange[], geoQueryInput: GeoQueryInput) {
+  private dispatchQueries(coveringCellIds: S2CellId[], geoQueryInput: QueryRadiusInput | QueryRectangleInput) {
 
     const promises: Promise<DynamoDB.ItemList[]>[] = [];
 
-    ranges.forEach(outerRange => {
-      outerRange.trySplit(this.config.hashKeyLength).forEach(range => {
+
+    coveringCellIds.forEach(outerRange => {
+      const hashRange = new GeohashRange(outerRange.rangeMin().id, outerRange.rangeMax().id);
+      hashRange.trySplit(this.config.hashKeyLength).forEach(range => {
         const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
 
-        promises.push(this.dynamoDBManager.queryGeohash(geoQueryInput, hashKey, range).then(queryResults =>
+        promises.push(this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range).then(queryResults =>
           queryResults.map(queryResult => this.filter(queryResult.Items, geoQueryInput))
         ));
       })
     });
 
-    return promises;
+    return Promise.all(promises).then((results: DynamoDB.ItemList[][]) => {
+      const mergedResults = [];
+      results.forEach(listList => listList.forEach(list => mergedResults.push(...list)));
+      return mergedResults;
+    });
   }
 
   /**
@@ -361,7 +330,7 @@ export class GeoDataManager {
    *
    * @return List of items within the queried area.
    */
-  private filter(list: DynamoDB.ItemList, geoQueryInput: GeoQueryInput): DynamoDB.ItemList {
+  private filter(list: DynamoDB.ItemList, geoQueryInput: QueryRadiusInput | QueryRectangleInput): DynamoDB.ItemList {
 
     const result: DynamoDB.ItemList = [];
 

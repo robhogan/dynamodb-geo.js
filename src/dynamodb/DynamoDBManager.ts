@@ -28,6 +28,7 @@ import {
 } from "../types";
 import { S2Manager } from "../s2/S2Manager";
 import { GeohashRange } from "../model/GeohashRange";
+import * as Long from "long";
 
 export class DynamoDBManager {
   private config: GeoDataManagerConfiguration;
@@ -48,7 +49,7 @@ export class DynamoDBManager {
    *
    * @return The query result.
    */
-  public queryGeohash(queryInput: DynamoDB.QueryInput, hashKey: number, range: GeohashRange): Promise<DynamoDB.QueryOutput[]> {
+  public queryGeohash(queryInput: DynamoDB.QueryInput | undefined, hashKey: Long, range: GeohashRange): Promise<DynamoDB.QueryOutput[]> {
     const queryOutputs: DynamoDB.QueryOutput[] = [];
 
     const nextQuery = (lastEvaluatedKey: DynamoDB.Key = null) => {
@@ -67,14 +68,16 @@ export class DynamoDBManager {
         AttributeValueList: [minRange, maxRange]
       };
 
-      queryInput.TableName = this.config.tableName;
-      queryInput.KeyConditions = keyConditions;
-      queryInput.IndexName = this.config.geohashIndexName;
-      queryInput.ConsistentRead = true;
-      queryInput.ReturnConsumedCapacity = "TOTAL";
-      queryInput.ExclusiveStartKey = lastEvaluatedKey;
+      const defaults = {
+        TableName: this.config.tableName,
+        KeyConditions: keyConditions,
+        IndexName: this.config.geohashIndexName,
+        ConsistentRead: true,
+        ReturnConsumedCapacity: "TOTAL",
+        ExclusiveStartKey: lastEvaluatedKey
+      };
 
-      return this.config.dynamoDBClient.query(queryInput).promise()
+      return this.config.dynamoDBClient.query({ ...defaults, ...queryInput }).promise()
         .then(queryOutput => {
           queryOutputs.push(queryOutput);
           if (queryOutput.LastEvaluatedKey) {
@@ -88,7 +91,7 @@ export class DynamoDBManager {
 
   public getPoint(getPointInput: GetPointInput): Request<GetPointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(getPointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
 
     const getItemInput = getPointInput.GetItemInput;
     getItemInput.TableName = this.config.tableName;
@@ -103,7 +106,7 @@ export class DynamoDBManager {
 
   public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
     const putItemInput = putPointInput.PutItemInput;
 
     putItemInput.TableName = this.config.tableName;
@@ -134,7 +137,7 @@ export class DynamoDBManager {
     const writeInputs: DynamoDB.WriteRequest[] = [];
     putPointInputs.forEach(putPointInput => {
       const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
-      const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
+      const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
       const putItemInput = putPointInput.PutItemInput;
 
       if (!putItemInput.Item) {
@@ -165,7 +168,7 @@ export class DynamoDBManager {
 
   public updatePoint(updatePointInput: UpdatePointInput): Request<UpdatePointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(updatePointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
 
     updatePointInput.UpdateItemInput.TableName = this.config.tableName;
 
@@ -187,7 +190,7 @@ export class DynamoDBManager {
 
   public deletePoint(deletePointInput: DeletePointInput): Request<DeletePointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(deletePointInput.GeoPoint);
-    const hashKey = S2Manager.generateHashKey(geohash.toNumber(), this.config.hashKeyLength);
+    const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
 
     deletePointInput.DeleteItemInput.TableName = this.config.tableName;
 
