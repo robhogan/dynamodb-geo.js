@@ -39,7 +39,7 @@ Todo: Docs
 ## Example
 See the [example on Github][example]
 
-[example] https://github.com/rh389/dynamodb-geo.js/tree/master/src
+[example]: https://github.com/rh389/dynamodb-geo.js/tree/master/example
 [dynamodb-geo]: https://github.com/awslabs/dynamodb-geo
 [dynamodb]: http://aws.amazon.com/dynamodb
 [dynamodb-query]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html
