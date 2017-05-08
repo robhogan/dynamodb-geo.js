@@ -27,6 +27,19 @@ Because all paginated `Query` results are loaded into memory and processed, it m
 ### Dataset density limitation
 The Geohash used in this library is roughly centimeter precision. Therefore, the library is not suitable if your dataset has much higher density.
 
+## API
+### GeoDataManagerConfiguration
+You must create an instance of `GeoDataManagerConfiguration` before doing anything else. This is a container for various options. You must provide a `DynamoDB` instance (from the AWS sdk) and a table name.
+
+### GeoDataManager
+A `GeoDataManager` instance allows interaction with a table containing geospatial data. Create an instance for each table you want to interact with.
+
+Todo: Docs
+
+## Example
+See the [example on Github][example]
+
+[example] https://github.com/rh389/dynamodb-geo.js/tree/master/src
 [dynamodb-geo]: https://github.com/awslabs/dynamodb-geo
 [dynamodb]: http://aws.amazon.com/dynamodb
 [dynamodb-query]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html
