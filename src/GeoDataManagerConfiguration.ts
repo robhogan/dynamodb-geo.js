@@ -18,12 +18,12 @@ import { S2RegionCoverer } from "nodes2ts";
 export class GeoDataManagerConfiguration {
 
   // Public constants
-  public static MERGE_THRESHOLD = 2;
+  static MERGE_THRESHOLD = 2;
 
   // Configuration properties
-  public tableName: string;
+  tableName: string;
 
-  consistentRead: true;
+  consistentRead: boolean = true;
 
   hashKeyAttributeName: string = "hashKey";
   rangeKeyAttributeName: string = "rangeKey";
