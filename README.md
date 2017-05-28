@@ -10,6 +10,10 @@ This project is an unofficial port of [awslabs/dynamodb-geo][dynamodb-geo], brin
 * **Customizable:** Access to raw request and result objects from the AWS SDK for javascript.
 * **Fully Typed:** This port is written in typescript and declaration files are bundled into releases.
 
+## Installation
+Using [npm] or [yarn]:
+`npm install --save dynamodb-geo` or `yarn add dynamodb-geo`.
+
 ## Getting started
 First you'll need to import the AWS sdk and set up your DynamoDB connection:
 
@@ -175,6 +179,8 @@ Because all paginated `Query` results are loaded into memory and processed, it m
 ### Dataset density limitation
 The Geohash used in this library is roughly centimeter precision. Therefore, the library is not suitable if your dataset has much higher density.
 
+[npm]: https://www.npmjs.com
+[yarn]: https://yarnpkg.com
 [updateitem]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html
 [putitem]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html
 [createtable]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html
