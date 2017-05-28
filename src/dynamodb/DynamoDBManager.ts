@@ -72,7 +72,7 @@ export class DynamoDBManager {
         TableName: this.config.tableName,
         KeyConditions: keyConditions,
         IndexName: this.config.geohashIndexName,
-        ConsistentRead: true,
+        ConsistentRead: this.config.consistentRead,
         ReturnConsumedCapacity: "TOTAL",
         ExclusiveStartKey: lastEvaluatedKey
       };
