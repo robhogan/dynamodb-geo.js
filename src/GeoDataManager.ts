@@ -18,7 +18,8 @@ import { DynamoDBManager } from "./dynamodb/DynamoDBManager";
 import { GeoDataManagerConfiguration } from "./GeoDataManagerConfiguration";
 import {
   BatchWritePointOutput,
-  DeletePointInput, DeletePointOutput, GeoPoint,
+  DeletePointInput, DeletePointOutput,
+  GeoPoint, GeoQueryInput,
   GetPointInput, GetPointOutput,
   PutPointInput, PutPointOutput,
   QueryRadiusInput,
@@ -27,8 +28,8 @@ import {
 } from "./types";
 import { S2Manager } from "./s2/S2Manager";
 import { S2Util } from "./s2/S2Util";
-import { GeohashRange } from "./model/GeohashRange";
-import { S2LatLngRect, S2CellId, S2LatLng } from "nodes2ts";
+import { S2LatLngRect, S2LatLng } from "nodes2ts";
+import { Covering } from "./model/Covering";
 
 /**
  * <p>
@@ -192,9 +193,10 @@ export class GeoDataManager {
   public queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(queryRectangleInput);
 
-    const ranges = this.config.s2RegionCoverer.getCoveringCells(latLngRect);
+    const covering = new Covering(this.config.s2RegionCoverer.getCoveringCells(latLngRect));
 
-    return this.dispatchQueries(ranges, queryRectangleInput);
+    return this.dispatchQueries(covering, queryRectangleInput)
+        .then(results => this.filterByRectangle(results, queryRectangleInput));
   }
 
   /**
@@ -214,7 +216,7 @@ export class GeoDataManager {
 	 * }
    * </pre>
    *
-   * @param queryRadiusRequest
+   * @param queryRadiusInput
    *            Container for the necessary parameters to execute radius query request.
    *
    * @return Result of radius query request.
@@ -222,9 +224,10 @@ export class GeoDataManager {
   public queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(queryRadiusInput);
 
-    const coveringCellIds = this.config.s2RegionCoverer.getCoveringCells(latLngRect);
+    const covering = new Covering(this.config.s2RegionCoverer.getCoveringCells(latLngRect));
 
-    return this.dispatchQueries(coveringCellIds, queryRadiusInput);
+    return this.dispatchQueries(covering, queryRadiusInput)
+        .then(results => this.filterByRadius(results, queryRadiusInput));
   }
 
   /**
@@ -288,33 +291,23 @@ export class GeoDataManager {
   /**
    * Query Amazon DynamoDB in parallel and filter the result.
    *
-   * @param coveringCellIds
+   * @param covering
    *            A list of geohash ranges that will be used to query Amazon DynamoDB.
    *
-   * @param latLngRect
+   * @param geoQueryInput
    *            The rectangle area that will be used as a reference point for precise filtering.
    *
    * @return Aggregated and filtered items returned from Amazon DynamoDB.
    */
-  private dispatchQueries(coveringCellIds: S2CellId[], geoQueryInput: QueryRadiusInput | QueryRectangleInput) {
-
-    const promises: Promise<DynamoDB.ItemList[]>[] = [];
-
-
-    coveringCellIds.forEach(outerRange => {
-      const hashRange = new GeohashRange(outerRange.rangeMin().id, outerRange.rangeMax().id);
-      hashRange.trySplit(this.config.hashKeyLength).forEach(range => {
-        const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
-
-        promises.push(this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range).then(queryResults =>
-          queryResults.map(queryResult => this.filter(queryResult.Items, geoQueryInput))
-        ));
-      })
+  private dispatchQueries(covering: Covering, geoQueryInput: GeoQueryInput) {
+    const promises: Promise<DynamoDB.QueryOutput>[] = covering.getGeoHashRanges(this.config.hashKeyLength).map(range => {
+      const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
+      return this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range);
     });
 
-    return Promise.all(promises).then((results: DynamoDB.ItemList[][]) => {
+    return Promise.all(promises).then((results: DynamoDB.QueryOutput[]) => {
       const mergedResults = [];
-      results.forEach(listList => listList.forEach(list => mergedResults.push(...list)));
+      results.forEach(queryOutput => mergedResults.push(...queryOutput.Items));
       return mergedResults;
     });
   }
@@ -323,44 +316,47 @@ export class GeoDataManager {
    * Filter out any points outside of the queried area from the input list.
    *
    * @param list
-   *            List of items return by Amazon DynamoDB. It may contains points outside of the actual area queried.
-   *
    * @param geoQueryInput
-   *            Queried area. Any points outside of this area need to be discarded.
-   *
-   * @return List of items within the queried area.
+   * @returns DynamoDB.ItemList
    */
-  private filter(list: DynamoDB.ItemList, geoQueryInput: QueryRadiusInput | QueryRectangleInput): DynamoDB.ItemList {
-
-    const result: DynamoDB.ItemList = [];
-
-    let latLngRect: S2LatLngRect = null;
+  private filterByRadius(list: DynamoDB.ItemList, geoQueryInput: QueryRadiusInput): DynamoDB.ItemList {
     let centerLatLng: S2LatLng = null;
     let radiusInMeter = 0;
-    if (geoQueryInput.hasOwnProperty('MinPoint')) {
-      latLngRect = S2Util.getBoundingLatLngRect(geoQueryInput);
-    } else if (geoQueryInput.hasOwnProperty('RadiusInMeter')) {
-      const centerPoint: GeoPoint = (geoQueryInput as QueryRadiusInput).CenterPoint;
-      centerLatLng = S2LatLng.fromDegrees(centerPoint.latitude, centerPoint.longitude);
-      radiusInMeter = (geoQueryInput as QueryRadiusInput).RadiusInMeter;
-    }
+
+    const centerPoint: GeoPoint = (geoQueryInput as QueryRadiusInput).CenterPoint;
+    centerLatLng = S2LatLng.fromDegrees(centerPoint.latitude, centerPoint.longitude);
+    radiusInMeter = (geoQueryInput as QueryRadiusInput).RadiusInMeter;
 
 
-    list.forEach(item => {
+    return list.filter(item => {
       const geoJson: string = item[this.config.geoJsonAttributeName].S;
       const coordinates = JSON.parse(geoJson).coordinates;
       const longitude = coordinates[this.config.longitudeFirst ? 0 : 1];
       const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
 
       const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
-      if (latLngRect != null && latLngRect.containsLL(latLng)) {
-        result.push(item);
-      } else if (centerLatLng != null && radiusInMeter > 0
-        && (centerLatLng.getEarthDistance(latLng) as any).toNumber() <= radiusInMeter) {
-        result.push(item);
-      }
+      return (centerLatLng.getEarthDistance(latLng) as any).toNumber() <= radiusInMeter;
     });
+  }
 
-    return result;
+  /**
+   * Filter out any points outside of the queried area from the input list.
+   *
+   * @param list
+   * @param geoQueryInput
+   * @returns DynamoDB.ItemList
+   */
+  private filterByRectangle(list: DynamoDB.ItemList, geoQueryInput: QueryRectangleInput): DynamoDB.ItemList {
+    const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRect(geoQueryInput);
+
+    return list.filter(item => {
+      const geoJson: string = item[this.config.geoJsonAttributeName].S;
+      const coordinates = JSON.parse(geoJson).coordinates;
+      const longitude = coordinates[this.config.longitudeFirst ? 0 : 1];
+      const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
+
+      const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
+      return latLngRect.containsLL(latLng);
+    });
   }
 }
