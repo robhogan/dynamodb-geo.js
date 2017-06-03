@@ -47,11 +47,11 @@ export class GeoDataManagerConfiguration {
 
   dynamoDBClient: DynamoDB;
 
-  s2RegionCoverer: S2RegionCoverer;
+  S2RegionCoverer: typeof S2RegionCoverer;
 
   constructor(dynamoDBClient, tableName: string) {
     this.dynamoDBClient = dynamoDBClient;
     this.tableName = tableName;
-    this.s2RegionCoverer = new S2RegionCoverer();
+    this.S2RegionCoverer = S2RegionCoverer;
   }
 }

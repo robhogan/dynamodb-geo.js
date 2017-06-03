@@ -193,7 +193,7 @@ export class GeoDataManager {
   public queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.latLngRectFromQueryRectangleInput(queryRectangleInput);
 
-    const covering = new Covering(this.config.s2RegionCoverer.getCoveringCells(latLngRect));
+    const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
 
     return this.dispatchQueries(covering, queryRectangleInput)
         .then(results => this.filterByRectangle(results, queryRectangleInput));
@@ -224,7 +224,7 @@ export class GeoDataManager {
   public queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRectFromQueryRadiusInput(queryRadiusInput);
 
-    const covering = new Covering(this.config.s2RegionCoverer.getCoveringCells(latLngRect));
+    const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
 
     return this.dispatchQueries(covering, queryRadiusInput)
         .then(results => this.filterByRadius(results, queryRadiusInput));
