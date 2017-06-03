@@ -94,7 +94,7 @@ describe('Example', function () {
                 country: { S: 'United Kingdom' },
                 capital: { S: 'London' },
                 hashKey: { N: '522' },
-                geoJson: { S: '{"type":"POINT","coordinates":[51.51,-0.13]}' },
+                geoJson: { S: '{"type":"POINT","coordinates":[-0.13,51.51]}' },
                 geohash: { N: '5221366118452580119' }
             }])
         });
