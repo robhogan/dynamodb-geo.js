@@ -23,7 +23,7 @@ export class GeoDataManagerConfiguration {
   // Configuration properties
   tableName: string;
 
-  consistentRead: boolean = true;
+  consistentRead: boolean = false;
 
   hashKeyAttributeName: string = "hashKey";
   rangeKeyAttributeName: string = "rangeKey";
