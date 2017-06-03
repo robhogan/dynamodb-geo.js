@@ -3,8 +3,8 @@ import * as AWS from "aws-sdk";
 import { expect } from "chai";
 
 AWS.config.update({
-    accessKeyId: '',
-    secretAccessKey: '',
+    accessKeyId: 'dummy',
+    secretAccessKey: 'dummy',
     region: 'eu-west-1'
 });
 
