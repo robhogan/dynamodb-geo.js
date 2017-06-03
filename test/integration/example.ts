@@ -99,6 +99,7 @@ describe('Example', function () {
     });
 
     after(function () {
+        this.timeout(10000);
         return ddb.deleteTable({ TableName: config.tableName }).promise()
     });
 });
