@@ -18,11 +18,12 @@ describe('Example', function () {
     // Instantiate the table manager
     const capitalsManager = new ddbGeo.GeoDataManager(config);
 
-    // Use GeoTableUtil to help construct a CreateTableInput.
-    const createTableInput = ddbGeo.GeoTableUtil.getCreateTableRequest(config);
-
     before(function () {
         this.timeout(20000);
+        config.hashKeyLength = 3;
+
+        // Use GeoTableUtil to help construct a CreateTableInput.
+        const createTableInput = ddbGeo.GeoTableUtil.getCreateTableRequest(config);
         createTableInput.ProvisionedThroughput.ReadCapacityUnits = 2;
         return ddb.createTable(createTableInput).promise()
         // Wait for it to become ready
@@ -73,9 +74,7 @@ describe('Example', function () {
                         });
                 }
 
-                return resumeWriting().catch(function (error) {
-                    console.warn(error);
-                });
+                return resumeWriting();
             });
     });
 
@@ -89,12 +88,14 @@ describe('Example', function () {
                 longitude: 0.149593
             }
         }).then((result) => {
-            expect(result).to.deep.equal([ { rangeKey: { S: '50' },
+            expect(result).to.deep.equal([{
+                rangeKey: { S: '50' },
                 country: { S: 'United Kingdom' },
                 capital: { S: 'London' },
-                hashKey: { N: '522136' },
+                hashKey: { N: '522' },
                 geoJson: { S: '{"type":"POINT","coordinates":[51.51,-0.13]}' },
-                geohash: { N: '5221366118452580119' } } ])
+                geohash: { N: '5221366118452580119' }
+            }])
         });
     });
 
