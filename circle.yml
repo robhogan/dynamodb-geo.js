@@ -1,0 +1,14 @@
+version: 2
+executorType: docker
+containerInfo:
+  - image: rh389/node-base
+  - image: deangiberson/aws-dynamodb-local
+
+stages:
+  build:
+    workDir: ~/my-project
+    steps:
+      - type: checkout
+      - type: shell
+        shell: /bin/sh
+        command: yarn install && yarn test
