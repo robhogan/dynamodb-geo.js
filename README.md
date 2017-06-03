@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/dynamodb-geo.svg)](https://badge.fury.io/js/dynamodb-geo)
+[![npm version](https://badge.fury.io/js/dynamodb-geo.svg)](https://badge.fury.io/js/dynamodb-geo) [![CircleCI](https://circleci.com/gh/rh389/dynamodb-geo.js.svg?style=svg)](https://circleci.com/gh/rh389/dynamodb-geo.js)
 
 # Geo Library for Amazon DynamoDB
 This project is an unofficial port of [awslabs/dynamodb-geo][dynamodb-geo], bringing creation and querying of geospatial data to Node JS developers using [Amazon DynamoDB][dynamodb].
