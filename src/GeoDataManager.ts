@@ -300,14 +300,14 @@ export class GeoDataManager {
    * @return Aggregated and filtered items returned from Amazon DynamoDB.
    */
   private dispatchQueries(covering: Covering, geoQueryInput: GeoQueryInput) {
-    const promises: Promise<DynamoDB.QueryOutput>[] = covering.getGeoHashRanges(this.config.hashKeyLength).map(range => {
+    const promises: Promise<DynamoDB.QueryOutput[]>[] = covering.getGeoHashRanges(this.config.hashKeyLength).map(range => {
       const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
       return this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range);
     });
 
-    return Promise.all(promises).then((results: DynamoDB.QueryOutput[]) => {
+    return Promise.all(promises).then((results: DynamoDB.QueryOutput[][]) => {
       const mergedResults = [];
-      results.forEach(queryOutput => mergedResults.push(...queryOutput.Items));
+      results.forEach(queryOutputs => queryOutputs.forEach(queryOutput => mergedResults.push(...queryOutput.Items)));
       return mergedResults;
     });
   }
