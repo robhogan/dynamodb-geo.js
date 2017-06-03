@@ -133,7 +133,7 @@ TODO: Docs (see [the example][example] for an example of a batch write)
 ## Configuration reference
 These are public properties of a `GeoDataManagerConfiguration` instance. After creating the config object you may modify these properties.
 
-#### consistentRead: boolean = true;
+#### consistentRead: boolean = false
 Whether queries use the [`ConsistentRead`][readconsistency] option (for strongly consistent reads) or not (for eventually consistent reads, at half the cost).
 
 This can also be overridden for individual queries as a query config option.
@@ -142,21 +142,21 @@ This library will automatically add GeoJSON-style position data to your stored i
 
 This fork allows you to choose between [awslabs/dynamodb-geo][dynamodb-geo] compatibility and GeoJSON standard compliance.
 
-* Use `false` (`[lat, lon]`) for compatibility with [awslabs/dynamodb-geo][dynamodb-geo] (default)
-* Use `true` (`[lon, lat]`) for GeoJSON standard compliance.
+* Use `false` (`[lat, lon]`) for compatibility with [awslabs/dynamodb-geo][dynamodb-geo]
+* Use `true` (`[lon, lat]`) for GeoJSON standard compliance. (default)
 
 Note that this value should match the state of your existing data - if you change it you must update your database manually, or you'll end up with ambiguously mixed data.
-#### geohashAttributeName: string = "geohash";
+#### geohashAttributeName: string = "geohash"
 The name of the attribute storing the full 64-bit geohash. Its value is auto-generated based on item coordinates.
-#### hashKeyAttributeName: string = "hashKey";
-The name of the attribute storing the first `hashKeyLength` digits (default 6) of the geo hash, used as the hash (aka partition) part of a [hash/range primary key pair][hashrange]. Its value is auto-generated based on item coordinates.
-#### hashKeyLength: number = 6;
+#### hashKeyAttributeName: string = "hashKey"
+The name of the attribute storing the first `hashKeyLength` digits (default 2) of the geo hash, used as the hash (aka partition) part of a [hash/range primary key pair][hashrange]. Its value is auto-generated based on item coordinates.
+#### hashKeyLength: number = 2
 The number of digits (in base 10) of the 64-bit geo hash to use as the hash key.
-#### rangeKeyAttributeName: string = "rangeKey";
+#### rangeKeyAttributeName: string = "rangeKey"
 The name of the attribute storing the range key, used as the range (aka sort) part of a [hash/range key primary key pair][hashrange]. Its value must be specified by you (hash-range pairs must be unique).
-#### geoJsonAttributeName: string = "geoJson";
+#### geoJsonAttributeName: string = "geoJson"
 The name of the attribute which will contain the longitude/latitude pair in a GeoJSON-style point (see also `longitudeFirst`).
-#### geohashIndexName: string = "geohash-index";
+#### geohashIndexName: string = "geohash-index"
 The name of the index to be created against the geohash. Only used for creating new tables.
 
 ## Example

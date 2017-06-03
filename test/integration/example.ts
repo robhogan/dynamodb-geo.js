@@ -21,6 +21,7 @@ describe('Example', function () {
     before(function () {
         this.timeout(20000);
         config.hashKeyLength = 3;
+        config.consistentRead = true;
 
         // Use GeoTableUtil to help construct a CreateTableInput.
         const createTableInput = ddbGeo.GeoTableUtil.getCreateTableRequest(config);

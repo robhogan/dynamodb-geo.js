@@ -32,18 +32,18 @@ export class GeoDataManagerConfiguration {
 
   geohashIndexName: string = "geohash-index";
 
-  hashKeyLength: number = 6;
+  hashKeyLength: number = 2;
 
   /**
    * The order of the GeoJSON coordinate pair in data.
-   * Use false [lat, lon] for compatibility with the Java library https://github.com/awslabs/dynamodb-geo (default)
-   * Use true [lon, lat] for GeoJSON standard compliance.
+   * Use false [lat, lon] for compatibility with the Java library https://github.com/awslabs/dynamodb-geo
+   * Use true [lon, lat] for GeoJSON standard compliance. (default)
    *
    * Note that this value should match the state of your existing data - if you change it you must update your database manually
    *
    * @type {boolean}
    */
-  longitudeFirst: boolean = false;
+  longitudeFirst: boolean = true;
 
   dynamoDBClient: DynamoDB;
 
