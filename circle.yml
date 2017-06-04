@@ -9,6 +9,12 @@ stages:
     workDir: ~/my-project
     steps:
       - type: checkout
+      - restore_cache:
+        key: v1-yarn
       - type: shell
         shell: /bin/sh
         command: yarn install && yarn test
+      - save_cache:
+          key: v1-yarn-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/my-project/node_modules
