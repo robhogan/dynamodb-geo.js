@@ -10,7 +10,7 @@ stages:
     steps:
       - type: checkout
       - restore_cache:
-        key: v1-yarn
+          key: v1-yarn
       - type: shell
         shell: /bin/sh
         command: yarn install && yarn test
