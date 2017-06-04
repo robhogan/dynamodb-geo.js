@@ -172,7 +172,7 @@ The name of the attribute storing the full 64-bit geohash. Its value is auto-gen
 The name of the attribute storing the first `hashKeyLength` digits (default 2) of the geo hash, used as the hash (aka partition) part of a [hash/range primary key pair][hashrange]. Its value is auto-generated based on item coordinates.
 
 #### hashKeyLength: number = 2
-See above.
+See [above][choosing-hashkeylength].
 
 #### rangeKeyAttributeName: string = "rangeKey"
 The name of the attribute storing the range key, used as the range (aka sort) part of a [hash/range key primary key pair][hashrange]. Its value must be specified by you (hash-range pairs must be unique).
@@ -216,3 +216,4 @@ The Geohash used in this library is roughly centimeter precision. Therefore, the
 [dynamodb]: http://aws.amazon.com/dynamodb
 [dynamodb-query]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html
 [hashkeylength-tests]: https://github.com/rh389/dynamodb-geo.js/blob/master/test/integration/hashKeyLength.ts
+[choosing-hashkeylength]: https://github.com/rh389/dynamodb-geo.js/blob/master/README.md#choosing-a-hashkeylength-optimising-for-performance-and-cost
