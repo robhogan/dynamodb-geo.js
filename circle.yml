@@ -6,7 +6,7 @@ containerInfo:
 
 stages:
   build:
-    workDir: ~/my-project
+    workDir: ~/workspace
     steps:
       - type: checkout
       - restore_cache:
@@ -17,4 +17,4 @@ stages:
       - save_cache:
           key: v1-yarn-{{ checksum "yarn.lock" }}
           paths:
-            - ~/my-project/node_modules
+            - ~/workspace/node_modules
