@@ -14,18 +14,18 @@
   "author": "Rob Hogan <github@rhogan.net>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/decimal.js": "^0.0.29",
+    "@types/decimal.js": "^0.0.30",
     "@types/long": ">=3",
-    "aws-sdk": "^2.27.0",
+    "aws-sdk": "^2.62.0",
     "nodes2ts": "^1.1.9"
   },
   "devDependencies": {
-    "@types/chai": "^3.5.2",
+    "@types/chai": "^4.0.0",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.22",
-    "chai": "^3.5.0",
+    "@types/node": "^7.0.27",
+    "chai": "^4.0.1",
     "mocha": "^3.3.0",
     "ts-node": "^3.0.2",
-    "typescript": "^2.2.1"
+    "typescript": "^2.3.4"
   }
 }
