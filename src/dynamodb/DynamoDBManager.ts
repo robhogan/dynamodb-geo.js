@@ -115,6 +115,7 @@ export class DynamoDBManager {
       putItemInput.Item = {};
     }
 
+    putItemInput[this.config.conditionExpressionAttributeName] = putPointInput.ConditionExpression;
     putItemInput.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
     putItemInput.Item[this.config.rangeKeyAttributeName] = putPointInput.RangeKeyValue;
     putItemInput.Item[this.config.geohashAttributeName] = { N: geohash.toString(10) };
