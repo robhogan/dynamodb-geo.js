@@ -142,7 +142,7 @@ export class DynamoDBManager {
       const putItemInput = putPointInput.PutItemInput;
 
       const putRequest: PutRequest = {
-        Item: putItemInput || { }
+        Item: putItemInput.Item || { }
       };
 
       putRequest.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
