@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/decimal.js": "^0.0.30",
     "@types/long": ">=3",
-    "aws-sdk": "^2.62.0",
+    "aws-sdk": "^2.176.0",
     "nodes2ts": "^1.1.9"
   },
   "devDependencies": {
