@@ -29,7 +29,7 @@ import {
 import { S2Manager } from "../s2/S2Manager";
 import { GeohashRange } from "../model/GeohashRange";
 import * as Long from "long";
-import { PutRequest } from "aws-sdk/clients/dynamodb";
+import { PutRequest, PutItemInput } from "aws-sdk/clients/dynamodb";
 
 export class DynamoDBManager {
   private config: GeoDataManagerConfiguration;
@@ -108,12 +108,9 @@ export class DynamoDBManager {
   public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
     const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
-    const putItemInput = putPointInput.PutItemInput;
-
-    putItemInput.TableName = this.config.tableName;
-
-    if (!putItemInput.Item) {
-      putItemInput.Item = {};
+    const putItemInput: PutItemInput = {
+      TableName: this.config.tableName,
+      Item: putPointInput.PutItemInput.Item || { }
     }
 
     putItemInput.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
@@ -127,7 +124,6 @@ export class DynamoDBManager {
           [putPointInput.GeoPoint.latitude, putPointInput.GeoPoint.longitude])
       })
     };
-
 
     return this.config.dynamoDBClient.putItem(putItemInput);
   }
