@@ -126,7 +126,23 @@ myGeoTableManager.updatePoint({
 TODO: Docs
 
 ## Rectangular queries
-TODO: Docs
+Query by rectangle by specifying a `MinPoint` and `MaxPoint`.
+
+```js
+// Querying a rectangle
+myGeoTableManager.queryRectangle({
+        MinPoint: {
+            latitude: 52.225730,
+            longitude: 0.149593
+        },
+        MaxPoint: {
+            latitude: 52.889499,
+            longitude: 0.848383
+        }
+    })
+    // Print the results, an array of DynamoDB.AttributeMaps
+    .then(console.log);
+```
 
 ## Radius queries
 Query by radius by specifying a `CenterPoint` and `RadiusInMeter`.
