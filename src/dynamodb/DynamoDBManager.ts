@@ -29,6 +29,7 @@ import {
 import { S2Manager } from "../s2/S2Manager";
 import { GeohashRange } from "../model/GeohashRange";
 import * as Long from "long";
+import { PutRequest, PutItemInput } from "aws-sdk/clients/dynamodb";
 
 export class DynamoDBManager {
   private config: GeoDataManagerConfiguration;
@@ -107,12 +108,9 @@ export class DynamoDBManager {
   public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
     const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
     const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
-    const putItemInput = putPointInput.PutItemInput;
-
-    putItemInput.TableName = this.config.tableName;
-
-    if (!putItemInput.Item) {
-      putItemInput.Item = {};
+    const putItemInput: PutItemInput = {
+      TableName: this.config.tableName,
+      Item: putPointInput.PutItemInput.Item || { }
     }
 
     putItemInput.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
@@ -127,7 +125,6 @@ export class DynamoDBManager {
       })
     };
 
-
     return this.config.dynamoDBClient.putItem(putItemInput);
   }
 
@@ -140,14 +137,14 @@ export class DynamoDBManager {
       const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
       const putItemInput = putPointInput.PutItemInput;
 
-      if (!putItemInput.Item) {
-        putItemInput.Item = {};
-      }
+      const putRequest: PutRequest = {
+        Item: putItemInput.Item || { }
+      };
 
-      putItemInput.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
-      putItemInput.Item[this.config.rangeKeyAttributeName] = putPointInput.RangeKeyValue;
-      putItemInput.Item[this.config.geohashAttributeName] = { N: geohash.toString(10) };
-      putItemInput.Item[this.config.geoJsonAttributeName] = {
+      putRequest.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
+      putRequest.Item[this.config.rangeKeyAttributeName] = putPointInput.RangeKeyValue;
+      putRequest.Item[this.config.geohashAttributeName] = { N: geohash.toString(10) };
+      putRequest.Item[this.config.geoJsonAttributeName] = {
         S: JSON.stringify({
           type: 'POINT',
           coordinates: (this.config.longitudeFirst ?
@@ -155,8 +152,8 @@ export class DynamoDBManager {
             [putPointInput.GeoPoint.latitude, putPointInput.GeoPoint.longitude])
         })
       };
-
-      writeInputs.push({ PutRequest: putItemInput });
+      
+      writeInputs.push({ PutRequest: putRequest });
     });
 
     return this.config.dynamoDBClient.batchWriteItem({

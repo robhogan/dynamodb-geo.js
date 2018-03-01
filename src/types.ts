@@ -30,7 +30,7 @@ export interface GetPointOutput extends DynamoDB.GetItemOutput {
 export interface PutPointInput {
   RangeKeyValue: DynamoDB.AttributeValue;
   GeoPoint: GeoPoint;
-  PutItemInput: DynamoDB.PutItemInput;
+  PutItemInput: DynamoDB.PutRequest;
 }
 export interface PutPointOutput extends DynamoDB.PutItemOutput {
 }
