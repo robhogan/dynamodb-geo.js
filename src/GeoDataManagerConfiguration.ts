@@ -29,7 +29,7 @@ export class GeoDataManagerConfiguration {
   rangeKeyAttributeName: string = "rangeKey";
   geohashAttributeName: string = "geohash";
   geoJsonAttributeName: string = "geoJson";
-
+  conditionExpressionAttributeName: string = "ConditionExpression";
   geohashIndexName: string = "geohash-index";
 
   hashKeyLength: number = 2;

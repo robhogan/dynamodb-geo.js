@@ -28,6 +28,7 @@ export interface GetPointInput {
 export interface GetPointOutput extends DynamoDB.GetItemOutput {
 }
 export interface PutPointInput {
+  ConditionExpression?: string;
   RangeKeyValue: DynamoDB.AttributeValue;
   GeoPoint: GeoPoint;
   PutItemInput: DynamoDB.PutRequest;
