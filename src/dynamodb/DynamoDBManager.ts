@@ -29,7 +29,7 @@ import {
 import { S2Manager } from "../s2/S2Manager";
 import { GeohashRange } from "../model/GeohashRange";
 import * as Long from "long";
-import { PutRequest, PutItemInput } from "aws-sdk/clients/dynamodb";
+import { PutItemInput, PutRequest } from "aws-sdk/clients/dynamodb";
 
 export class DynamoDBManager {
   private config: GeoDataManagerConfiguration;
@@ -110,7 +110,7 @@ export class DynamoDBManager {
     const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
     const putItemInput: PutItemInput = {
       TableName: this.config.tableName,
-      Item: putPointInput.PutItemInput.Item || { }
+      Item: putPointInput.PutItemInput.Item || {}
     }
 
     putItemInput.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
@@ -138,7 +138,7 @@ export class DynamoDBManager {
       const putItemInput = putPointInput.PutItemInput;
 
       const putRequest: PutRequest = {
-        Item: putItemInput.Item || { }
+        Item: putItemInput.Item || {}
       };
 
       putRequest.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
@@ -152,7 +152,7 @@ export class DynamoDBManager {
             [putPointInput.GeoPoint.latitude, putPointInput.GeoPoint.longitude])
         })
       };
-      
+
       writeInputs.push({ PutRequest: putRequest });
     });
 
@@ -189,15 +189,13 @@ export class DynamoDBManager {
     const geohash = S2Manager.generateGeohash(deletePointInput.GeoPoint);
     const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
 
-    deletePointInput.DeleteItemInput.TableName = this.config.tableName;
-
-    if (!deletePointInput.DeleteItemInput.Key) {
-      deletePointInput.DeleteItemInput.Key = {};
-    }
-
-    deletePointInput.DeleteItemInput.Key[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
-    deletePointInput.DeleteItemInput.Key[this.config.rangeKeyAttributeName] = deletePointInput.RangeKeyValue;
-
-    return this.config.dynamoDBClient.deleteItem(deletePointInput.DeleteItemInput);
+    return this.config.dynamoDBClient.deleteItem({
+      ...deletePointInput.DeleteItemInput,
+      TableName: this.config.tableName,
+      Key: {
+        [this.config.hashKeyAttributeName]: { N: hashKey.toString(10) },
+        [this.config.rangeKeyAttributeName]: deletePointInput.RangeKeyValue
+      }
+    });
   }
 }

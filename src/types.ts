@@ -6,7 +6,7 @@ export interface BatchWritePointOutput extends DynamoDB.BatchWriteItemOutput {
 export interface DeletePointInput {
   RangeKeyValue: DynamoDB.AttributeValue;
   GeoPoint: GeoPoint;
-  DeleteItemInput: DynamoDB.DeleteItemInput
+  DeleteItemInput?: DynamoDB.DeleteItemInput
 }
 export interface DeletePointOutput extends DynamoDB.DeleteItemOutput {
 }

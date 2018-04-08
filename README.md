@@ -103,7 +103,7 @@ See also [DynamoDB PutItem request][putitem]
 ## Updating a specific point
 Note that you cannot update the hash key, range key, geohash or geoJson. If you want to change these, you'll need to recreate the record.
 
-You must specify a `RangeKeyValue`, a `GeoPoint`, and an `UpdateItemInput` matching the [DynamoDB UpdateItem request][updateitem] (`TableName` and `Key` are filled in for you).
+You must specify a `RangeKeyValue`, a `GeoPoint`, and an `UpdateItemInput` matching the [DynamoDB UpdateItem][updateitem] request (`TableName` and `Key` are filled in for you).
 
 ```js
 myGeoTableManager.updatePoint({
@@ -122,8 +122,24 @@ myGeoTableManager.updatePoint({
     .then(function() { console.log('Done!') });
 ```
 
-## Deleting data
-TODO: Docs
+## Deleting a specific point
+You must specify a `RangeKeyValue` and a `GeoPoint`. Optionally, you can pass `DeleteItemInput` matching [DynamoDB DeleteItem][deleteitem] request (`TableName` and `Key` are filled in for you).
+
+```js
+myGeoTableManager.deletePoint({
+        RangeKeyValue: { S: '1234' },
+        GeoPoint: { // An object specifying latitutde and longitude as plain numbers.
+            latitude: 51.51,
+            longitude: -0.13
+        },
+        DeleteItemInput: { // Optional, any additional parameters to pass through.
+            // TableName and Key are filled in for you
+            // Example: Only delete if the point does not have a country name set
+            ConditionExpression: 'attribute_not_exists(country)'
+        }
+    }).promise()
+    .then(function() { console.log('Done!') });
+```
 
 ## Rectangular queries
 Query by rectangle by specifying a `MinPoint` and `MaxPoint`.
@@ -222,6 +238,7 @@ The Geohash used in this library is roughly centimeter precision. Therefore, the
 [npm]: https://www.npmjs.com
 [yarn]: https://yarnpkg.com
 [updateitem]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html
+[deleteitem]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html
 [putitem]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html
 [createtable]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html
 [hashrange]: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
