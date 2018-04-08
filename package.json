@@ -1,6 +1,6 @@
 {
   "name": "dynamodb-geo",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A javascript port of awslabs/dynamodb-geo, for dynamodb geospatial querying",
   "scripts": {
     "prepublish": "tsc -d",
