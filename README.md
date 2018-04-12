@@ -93,7 +93,8 @@ myGeoTableManager.putPoint({
             Item: { // The primary key, geohash and geojson data is filled in for you
                 country: { S: 'UK' }, // Specify attribute values using { type: value } objects, like the DynamoDB API.
                 capital: { S: 'London' }
-            }
+            },
+            // ... Anything else to pass through to `putItem`, eg ConditionExpression
         }
     }).promise()
     .then(function() { console.log('Done!') });

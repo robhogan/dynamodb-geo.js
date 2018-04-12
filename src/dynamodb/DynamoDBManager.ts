@@ -109,9 +109,10 @@ export class DynamoDBManager {
     const geohash = S2Manager.generateGeohash(putPointInput.GeoPoint);
     const hashKey = S2Manager.generateHashKey(geohash, this.config.hashKeyLength);
     const putItemInput: PutItemInput = {
+      ...putPointInput.PutItemInput,
       TableName: this.config.tableName,
       Item: putPointInput.PutItemInput.Item || {}
-    }
+    };
 
     putItemInput.Item[this.config.hashKeyAttributeName] = { N: hashKey.toString(10) };
     putItemInput.Item[this.config.rangeKeyAttributeName] = putPointInput.RangeKeyValue;
