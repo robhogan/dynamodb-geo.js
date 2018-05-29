@@ -16,10 +16,10 @@
   "dependencies": {
     "@types/decimal.js": "^0.0.30",
     "@types/long": ">=3",
-    "aws-sdk": "^2.176.0",
     "nodes2ts": "^1.1.10"
   },
   "devDependencies": {
+    "aws-sdk": "^2.176.0",
     "@types/chai": "^4.0.0",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.27",
