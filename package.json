@@ -16,7 +16,6 @@
   "dependencies": {
     "@types/decimal.js": "^0.0.30",
     "@types/long": ">=3",
-    "aws-sdk": "^2.176.0",
     "nodes2ts": "^1.1.10"
   },
   "devDependencies": {
@@ -27,5 +26,8 @@
     "mocha": "^3.3.0",
     "ts-node": "^3.0.2",
     "typescript": "^2.3.4"
+  },
+  "peerDependencies": {
+    "aws-sdk": "^2.176.0"
   }
 }
