@@ -22,6 +22,7 @@
     "@types/chai": "^4.0.0",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.27",
+    "aws-sdk": "^2.248.1",
     "chai": "^4.0.1",
     "mocha": "^3.3.0",
     "ts-node": "^3.0.2",
