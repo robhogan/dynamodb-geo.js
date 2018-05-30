@@ -1,4 +1,4 @@
-import * as ddbGeo from "../../";
+import * as ddbGeo from "../../src";
 import * as AWS from "aws-sdk";
 import { expect } from "chai";
 
