@@ -19,7 +19,6 @@
     "nodes2ts": "^1.1.10"
   },
   "devDependencies": {
-    "aws-sdk": "^2.176.0",
     "@types/chai": "^4.0.0",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.27",
@@ -27,5 +26,8 @@
     "mocha": "^3.3.0",
     "ts-node": "^3.0.2",
     "typescript": "^2.3.4"
+  },
+  "peerDependencies": {
+    "aws-sdk": "^2.176.0"
   }
 }
