@@ -18,17 +18,22 @@ import { DynamoDBManager } from "./dynamodb/DynamoDBManager";
 import { GeoDataManagerConfiguration } from "./GeoDataManagerConfiguration";
 import {
   BatchWritePointOutput,
-  DeletePointInput, DeletePointOutput,
-  GeoPoint, GeoQueryInput,
-  GetPointInput, GetPointOutput,
-  PutPointInput, PutPointOutput,
+  DeletePointInput,
+  DeletePointOutput,
+  GeoPoint,
+  GeoQueryInput,
+  GetPointInput,
+  GetPointOutput,
+  PutPointInput,
+  PutPointOutput,
   QueryRadiusInput,
   QueryRectangleInput,
-  UpdatePointInput, UpdatePointOutput
+  UpdatePointInput,
+  UpdatePointOutput
 } from "./types";
 import { S2Manager } from "./s2/S2Manager";
 import { S2Util } from "./s2/S2Util";
-import { S2LatLngRect, S2LatLng } from "nodes2ts";
+import { S2LatLng, S2LatLngRect } from "nodes2ts";
 import { Covering } from "./model/Covering";
 
 /**
@@ -181,8 +186,8 @@ export class GeoDataManager {
    * QueryRectangleResult queryRectangleResult = geoIndexManager.queryRectangle(queryRectangleRequest);
    *
    * for (Map&lt;String, AttributeValue&gt; item : queryRectangleResult.getItem()) {
-	 * 	System.out.println(&quot;item: &quot; + item);
-	 * }
+   * 	System.out.println(&quot;item: &quot; + item);
+   * }
    * </pre>
    *
    * @param queryRectangleInput
@@ -190,13 +195,13 @@ export class GeoDataManager {
    *
    * @return Result of rectangle query request.
    */
-  public queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
+  public async queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.latLngRectFromQueryRectangleInput(queryRectangleInput);
 
     const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
 
-    return this.dispatchQueries(covering, queryRectangleInput)
-        .then(results => this.filterByRectangle(results, queryRectangleInput));
+    const results = await this.dispatchQueries(covering, queryRectangleInput);
+    return this.filterByRectangle(results, queryRectangleInput);
   }
 
   /**
@@ -212,8 +217,8 @@ export class GeoDataManager {
    * QueryRadiusResult queryRadiusResult = geoIndexManager.queryRadius(queryRadiusRequest);
    *
    * for (Map&lt;String, AttributeValue&gt; item : queryRadiusResult.getItem()) {
-	 * 	System.out.println(&quot;item: &quot; + item);
-	 * }
+   * 	System.out.println(&quot;item: &quot; + item);
+   * }
    * </pre>
    *
    * @param queryRadiusInput
@@ -221,13 +226,13 @@ export class GeoDataManager {
    *
    * @return Result of radius query request.
    * */
-  public queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
+  public async queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
     const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRectFromQueryRadiusInput(queryRadiusInput);
 
     const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
 
-    return this.dispatchQueries(covering, queryRadiusInput)
-        .then(results => this.filterByRadius(results, queryRadiusInput));
+    const results = await this.dispatchQueries(covering, queryRadiusInput);
+    return this.filterByRadius(results, queryRadiusInput);
   }
 
   /**
@@ -299,17 +304,16 @@ export class GeoDataManager {
    *
    * @return Aggregated and filtered items returned from Amazon DynamoDB.
    */
-  private dispatchQueries(covering: Covering, geoQueryInput: GeoQueryInput) {
+  private async dispatchQueries(covering: Covering, geoQueryInput: GeoQueryInput) {
     const promises: Promise<DynamoDB.QueryOutput[]>[] = covering.getGeoHashRanges(this.config.hashKeyLength).map(range => {
       const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
       return this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range);
     });
 
-    return Promise.all(promises).then((results: DynamoDB.QueryOutput[][]) => {
-      const mergedResults = [];
-      results.forEach(queryOutputs => queryOutputs.forEach(queryOutput => mergedResults.push(...queryOutput.Items)));
-      return mergedResults;
-    });
+    const results: DynamoDB.QueryOutput[][] = await Promise.all(promises);
+    const mergedResults = [];
+    results.forEach(queryOutputs => queryOutputs.forEach(queryOutput => mergedResults.push(...queryOutput.Items)));
+    return mergedResults;
   }
 
   /**
