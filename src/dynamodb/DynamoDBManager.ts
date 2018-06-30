@@ -50,10 +50,10 @@ export class DynamoDBManager {
    *
    * @return The query result.
    */
-  public queryGeohash(queryInput: DynamoDB.QueryInput | undefined, hashKey: Long, range: GeohashRange): Promise<DynamoDB.QueryOutput[]> {
+  public async queryGeohash(queryInput: DynamoDB.QueryInput | undefined, hashKey: Long, range: GeohashRange): Promise<DynamoDB.QueryOutput[]> {
     const queryOutputs: DynamoDB.QueryOutput[] = [];
 
-    const nextQuery = (lastEvaluatedKey: DynamoDB.Key = null) => {
+    const nextQuery = async (lastEvaluatedKey: DynamoDB.Key = null) => {
       const keyConditions: { [key: string]: DynamoDB.Condition } = {};
 
       keyConditions[this.config.hashKeyAttributeName] = {
@@ -78,16 +78,15 @@ export class DynamoDBManager {
         ExclusiveStartKey: lastEvaluatedKey
       };
 
-      return this.config.dynamoDBClient.query({ ...defaults, ...queryInput }).promise()
-        .then(queryOutput => {
-          queryOutputs.push(queryOutput);
-          if (queryOutput.LastEvaluatedKey) {
-            return nextQuery(queryOutput.LastEvaluatedKey);
-          }
-        });
+      const queryOutput = await this.config.dynamoDBClient.query({ ...defaults, ...queryInput }).promise();
+      queryOutputs.push(queryOutput);
+      if (queryOutput.LastEvaluatedKey) {
+        return nextQuery(queryOutput.LastEvaluatedKey);
+      }
     };
 
-    return nextQuery().then(() => queryOutputs);
+    await nextQuery();
+    return queryOutputs;
   }
 
   public getPoint(getPointInput: GetPointInput): Request<GetPointOutput, AWSError> {
