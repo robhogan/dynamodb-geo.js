@@ -119,7 +119,7 @@ export class DynamoDBManager {
     putItemInput.Item[this.config.geohashAttributeName] = { N: geohash.toString(10) };
     putItemInput.Item[this.config.geoJsonAttributeName] = {
       S: JSON.stringify({
-        type: 'POINT',
+        type: this.config.geoJsonPointType,
         coordinates: (this.config.longitudeFirst ?
           [putPointInput.GeoPoint.longitude, putPointInput.GeoPoint.latitude] :
           [putPointInput.GeoPoint.latitude, putPointInput.GeoPoint.longitude])
@@ -147,7 +147,7 @@ export class DynamoDBManager {
       putRequest.Item[this.config.geohashAttributeName] = { N: geohash.toString(10) };
       putRequest.Item[this.config.geoJsonAttributeName] = {
         S: JSON.stringify({
-          type: 'POINT',
+          type: this.config.geoJsonPointType,
           coordinates: (this.config.longitudeFirst ?
             [putPointInput.GeoPoint.longitude, putPointInput.GeoPoint.latitude] :
             [putPointInput.GeoPoint.latitude, putPointInput.GeoPoint.longitude])
