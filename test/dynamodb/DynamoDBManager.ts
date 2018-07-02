@@ -42,7 +42,7 @@ describe('DynamoDBManager.putPoint', () => {
         expect(args).to.deep.equal({
             TableName: 'MyTable',
             Item: {
-              geoJson: { S: "{\"type\":\"POINT\",\"coordinates\":[-0.13,51.51]}" },
+              geoJson: { S: "{\"type\":\"Point\",\"coordinates\":[-0.13,51.51]}" },
               geohash: { N: "5221366118452580119" },
               hashKey: { N: "52" },
               rangeKey: { S: "1234" },

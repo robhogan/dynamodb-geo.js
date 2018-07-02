@@ -198,6 +198,13 @@ This fork allows you to choose between [awslabs/dynamodb-geo][dynamodb-geo] comp
 
 Note that this value should match the state of your existing data - if you change it you must update your database manually, or you'll end up with ambiguously mixed data.
 
+#### geoJsonPointType: "Point" | "POINT" = "Point"
+The value of the `type` attribute in recorded GeoJSON points. Should normally be `"Point"`, which is standards compliant.
+
+Use `"POINT"` for compatibility with [awslabs/dynamodb-geo][dynamodb-geo].
+
+This setting is only relevant for writes. This library doesn't inspect or set this value when reading/querying.
+
 #### geohashAttributeName: string = "geohash"
 The name of the attribute storing the full 64-bit geohash. Its value is auto-generated based on item coordinates.
 

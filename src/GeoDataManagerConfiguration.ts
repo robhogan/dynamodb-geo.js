@@ -45,6 +45,17 @@ export class GeoDataManagerConfiguration {
    */
   longitudeFirst: boolean = true;
 
+  /**
+   * The value of the 'type' attribute in recorded GeoJSON points. Should normally be 'Point', which is standards compliant.
+   *
+   * Use 'POINT' for compatibility with the Java library https://github.com/awslabs/dynamodb-geo
+   *
+   * This setting is only relevant for writes. This library doesn't inspect or set this value when reading/querying.
+   *
+   * @type {string}
+   */
+  geoJsonPointType: 'Point' | 'POINT' = 'Point';
+
   dynamoDBClient: DynamoDB;
 
   S2RegionCoverer: typeof S2RegionCoverer;

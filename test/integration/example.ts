@@ -68,7 +68,6 @@ describe('Example', function () {
       await new Promise((resolve) => setInterval(resolve, WAIT_BETWEEN_BATCHES_MS));
       return resumeWriting();
     }
-
     return resumeWriting();
   });
 
@@ -88,7 +87,7 @@ describe('Example', function () {
       country: { S: 'United Kingdom' },
       capital: { S: 'London' },
       hashKey: { N: '522' },
-      geoJson: { S: '{"type":"POINT","coordinates":[-0.13,51.51]}' },
+      geoJson: { S: '{"type":"Point","coordinates":[-0.13,51.51]}' },
       geohash: { N: '5221366118452580119' }
     }]);
   });
