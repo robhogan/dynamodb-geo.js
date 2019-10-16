@@ -6,7 +6,7 @@
     "prepublish": "tsc -d",
     "clean": "rm -rf dist",
     "build": "tsc -d",
-    "test": "mocha --require ts-node/register test/**/*.ts"
+    "test": "mocha --require ts-node/register test/**/*.ts --exit"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,21 +14,21 @@
   "author": "Rob Hogan <github@rhogan.net>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/decimal.js": "^0.0.30",
-    "@types/long": ">=3",
+    "@types/decimal.js": "^7.4.0",
+    "@types/long": ">=4",
     "nodes2ts": "^1.1.10"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.27",
-    "aws-sdk": "^2.248.1",
-    "chai": "^4.0.1",
-    "mocha": "^3.3.0",
-    "ts-node": "^3.0.2",
-    "typescript": "^2.3.4"
+    "@types/chai": "^4.2.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.11.1",
+    "aws-sdk": "^2.550.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.1",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
   },
   "peerDependencies": {
-    "aws-sdk": "^2.176.0"
+    "aws-sdk": "^2.550.0"
   }
 }

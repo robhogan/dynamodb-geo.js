@@ -94,6 +94,6 @@ describe('Example', function () {
 
   after(async function () {
     this.timeout(10000);
-    await ddb.deleteTable({ TableName: config.tableName }).promise()
+    await ddb.deleteTable({ TableName: config.tableName }).promise()    
   });
 });
