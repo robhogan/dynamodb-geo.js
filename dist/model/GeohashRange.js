@@ -5,17 +5,25 @@ var S2Manager_1 = require("../s2/S2Manager");
 var Long = require("long");
 var GeohashRange = /** @class */ (function () {
     function GeohashRange(min, max) {
-        this.rangeMin = min instanceof Long ? min : Long.fromNumber(min);
-        this.rangeMax = max instanceof Long ? max : Long.fromNumber(max);
+        this.rangeMin = Long.isLong(min)
+            ? min
+            : Long.fromNumber(min);
+        this.rangeMax = Long.isLong(max)
+            ? max
+            : Long.fromNumber(max);
     }
     GeohashRange.prototype.tryMerge = function (range) {
-        if (range.rangeMin.subtract(this.rangeMax).lessThanOrEqual(GeoDataManagerConfiguration_1.GeoDataManagerConfiguration.MERGE_THRESHOLD)
-            && range.rangeMin.greaterThan(this.rangeMax)) {
+        if (range.rangeMin
+            .subtract(this.rangeMax)
+            .lessThanOrEqual(GeoDataManagerConfiguration_1.GeoDataManagerConfiguration.MERGE_THRESHOLD) &&
+            range.rangeMin.greaterThan(this.rangeMax)) {
             this.rangeMax = range.rangeMax;
             return true;
         }
-        if (this.rangeMin.subtract(range.rangeMax).lessThanOrEqual(GeoDataManagerConfiguration_1.GeoDataManagerConfiguration.MERGE_THRESHOLD)
-            && this.rangeMin.greaterThan(range.rangeMax)) {
+        if (this.rangeMin
+            .subtract(range.rangeMax)
+            .lessThanOrEqual(GeoDataManagerConfiguration_1.GeoDataManagerConfiguration.MERGE_THRESHOLD) &&
+            this.rangeMin.greaterThan(range.rangeMax)) {
             this.rangeMin = range.rangeMin;
             return true;
         }
@@ -73,10 +81,20 @@ var GeohashRange = /** @class */ (function () {
         else {
             for (var l = minHashKey; l.lessThanOrEqual(maxHashKey); l = l.add(1)) {
                 if (l.greaterThan(0)) {
-                    result.push(new GeohashRange(l.equals(minHashKey) ? this.rangeMin : l.multiply(denominator), l.equals(maxHashKey) ? this.rangeMax : l.add(1).multiply(denominator).subtract(1)));
+                    result.push(new GeohashRange(l.equals(minHashKey) ? this.rangeMin : l.multiply(denominator), l.equals(maxHashKey)
+                        ? this.rangeMax
+                        : l
+                            .add(1)
+                            .multiply(denominator)
+                            .subtract(1)));
                 }
                 else {
-                    result.push(new GeohashRange(l.equals(minHashKey) ? this.rangeMin : l.subtract(1).multiply(denominator).add(1), l.equals(maxHashKey) ? this.rangeMax : l.multiply(denominator)));
+                    result.push(new GeohashRange(l.equals(minHashKey)
+                        ? this.rangeMin
+                        : l
+                            .subtract(1)
+                            .multiply(denominator)
+                            .add(1), l.equals(maxHashKey) ? this.rangeMax : l.multiply(denominator)));
                 }
             }
         }
