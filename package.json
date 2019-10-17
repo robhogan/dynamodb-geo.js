@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/decimal.js": "^7.4.0",
     "@types/long": ">=4",
+    "long": "^3.2.0",
     "nodes2ts": "^1.1.10"
   },
   "devDependencies": {
