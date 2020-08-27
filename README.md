@@ -1,3 +1,10 @@
+# In order for this to work you must create a .env file and put the following in it
+```
+accessKeyId=YOUR_AWS_KEY_ID
+secretAccessKey=YOUR_AWS_SECRET_ACCESS_KEY
+```
+
+
 [![npm version](https://badge.fury.io/js/dynamodb-geo.svg)](https://badge.fury.io/js/dynamodb-geo) [![CircleCI](https://circleci.com/gh/rh389/dynamodb-geo.js.svg?style=shield)](https://circleci.com/gh/rh389/dynamodb-geo.js)
 
 # Geo Library for Amazon DynamoDB
