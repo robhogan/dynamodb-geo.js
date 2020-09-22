@@ -6,9 +6,9 @@ export class GeohashRange {
   rangeMin: Long;
   rangeMax: Long;
 
-  constructor(min: Long, max: Long) {
-    this.rangeMin = min instanceof Long ? min : Long.fromNumber(min);
-    this.rangeMax = max instanceof Long ? max : Long.fromNumber(max);
+  constructor(min: Long | number, max: Long | number) {
+    this.rangeMin = Long.isLong(min) ? <Long>min : Long.fromNumber(<number>min);
+    this.rangeMax = Long.isLong(max) ? <Long>max : Long.fromNumber(<number>max);
   }
 
   public tryMerge(range: GeohashRange): boolean {
