@@ -4,7 +4,7 @@ containerInfo:
   - image: rh389/node-base
   - image: deangiberson/aws-dynamodb-local
 
-stages:
+jobs:
   build:
     workDir: ~/workspace
     steps:
@@ -18,3 +18,10 @@ stages:
           key: v1-yarn-{{ checksum "yarn.lock" }}
           paths:
             - ~/workspace/node_modules
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+
