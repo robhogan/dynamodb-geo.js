@@ -339,7 +339,7 @@ export class GeoDataManager {
       const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
 
       const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
-      return (centerLatLng.getEarthDistance(latLng) as any).toNumber() <= radiusInMeter;
+      return centerLatLng.getEarthDistance(latLng) <= radiusInMeter;
     });
   }
 

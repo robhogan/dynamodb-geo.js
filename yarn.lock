@@ -126,10 +126,6 @@ debug@2.6.8:
   dependencies:
     ms "2.0.0"
 
-decimal.js@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-6.0.0.tgz#4fd58d0637f36fdbc1aba1320bc3f2cee83ca0f2"
-
 deep-eql@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/deep-eql/-/deep-eql-3.0.1.tgz#dfc9404400ad1c8fe023e7da1df1c147c4b444df"
@@ -279,9 +275,10 @@ lodash@^4.0.0:
   version "4.17.19"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
 
-long@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
+long@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
+  integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
 
 make-error@^1.1.1:
   version "1.3.4"
@@ -328,12 +325,12 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-nodes2ts@^1.1.10:
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/nodes2ts/-/nodes2ts-1.1.10.tgz#7828e1343ca7d41d1658d83352452740a29c2773"
+nodes2ts@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/nodes2ts/-/nodes2ts-2.0.0.tgz#7ff815313257d9eba696eecb63482ed3754d1954"
+  integrity sha512-847uDvD2P19xsN7BNPbeUqaZCxA3OBmlHCIqpAsy/JCnGI90XZeZTFtHueK6GZjn/CNaBG2sA42aI0qQvLAJig==
   dependencies:
-    decimal.js "^6.0.0"
-    long "^3.2.0"
+    long "^4.0.0"
 
 once@^1.3.0:
   version "1.4.0"
