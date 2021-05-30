@@ -6,7 +6,8 @@
     "prepublish": "tsc -d",
     "clean": "rm -rf dist",
     "build": "tsc -d",
-    "test": "mocha --require ts-node/register test/**/*.ts"
+    "test": "mocha --require ts-node/register test/**/*.ts",
+    "format:fix": "npx prettier --write ."
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,19 +15,21 @@
   "author": "Rob Hogan <github@rhogan.net>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/decimal.js": "^0.0.30",
-    "@types/long": ">=3",
-    "nodes2ts": "^1.1.10"
+    "@aws-sdk/client-dynamodb": "^3.17.0",
+    "@types/decimal.js": "^7.4.0",
+    "@types/long": "^4.0.1",
+    "aws-sdk": "^2.918.0",
+    "nodes2ts": "^2.0.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.27",
-    "aws-sdk": "^2.248.1",
-    "chai": "^4.0.1",
-    "mocha": "^3.3.0",
-    "ts-node": "^3.0.2",
-    "typescript": "^2.3.4"
+    "@types/chai": "^4.2.18",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^15.6.1",
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0",
+    "prettier": "2.3.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
   },
   "peerDependencies": {
     "aws-sdk": "^2.176.0"
