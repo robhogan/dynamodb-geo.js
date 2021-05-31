@@ -1,5 +1,9 @@
 [![npm version](https://badge.fury.io/js/dynamodb-geo.svg)](https://badge.fury.io/js/dynamodb-geo) [![CircleCI](https://circleci.com/gh/rh389/dynamodb-geo.js.svg?style=shield)](https://circleci.com/gh/rh389/dynamodb-geo.js)
 
+# Geo Library for Amazon DynamoDB using AWS sdk v3
+
+Thanks [rh389/dynamodb-geo.js][dynamodb-geo], this project is a port from it and using the aws sdk v3. It also upgrades the library to the latest, exports all types, and replace the test library with jest. It's just for my personal interests.
+
 # Geo Library for Amazon DynamoDB
 
 This project is an unofficial port of [awslabs/dynamodb-geo][dynamodb-geo], bringing creation and querying of geospatial data to Node JS developers using [Amazon DynamoDB][dynamodb].
@@ -15,23 +19,22 @@ This project is an unofficial port of [awslabs/dynamodb-geo][dynamodb-geo], brin
 ## Installation
 
 Using [npm] or [yarn]:
-`npm install --save dynamodb-geo` or `yarn add dynamodb-geo`.
+`npm install --save dynamodb-v3-geo` or `yarn add dynamodb-v3-geo`.
 
 ## Getting started
 
 First you'll need to import the AWS sdk and set up your DynamoDB connection:
 
 ```js
-const AWS = require("aws-sdk");
-const ddb = new AWS.DynamoDB({
-  endpoint: new AWS.Endpoint("http://localhost:8000"),
-}); // Local development
+// const DynamoDBClient = require("@aws-sdk/client-dynamodb")
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+const ddb = new AWS.DynamoDB({ region: "us-east-1" });
 ```
 
 Next you must create an instance of `GeoDataManagerConfiguration` for each geospatial table you wish to interact with. This is a container for various options (see API below), but you must always provide a `DynamoDB` instance and a table name.
 
 ```js
-const ddbGeo = require("dynamodb-geo");
+const ddbGeo = require("dynamodb-v3-geo");
 const config = new ddbGeo.GeoDataManagerConfiguration(ddb, "MyGeoTable");
 ```
 
@@ -76,54 +79,53 @@ Example:
 config.hashKeyLength = 3;
 
 // Use GeoTableUtil to help construct a CreateTableInput.
-const createTableInput = ddbGeo.GeoTableUtil.getCreateTableRequest(config);
+const createTableInput: CreateTableCommandInput =
+  GeoTableUtil.getCreateTableRequest(config);
 
 // Tweak the schema as desired
-createTableInput.ProvisionedThroughput.ReadCapacityUnits = 2;
+if (createTableInput && createTableInput.ProvisionedThroughput) {
+  createTableInput.ProvisionedThroughput.ReadCapacityUnits = 2;
+}
 
 console.log("Creating table with schema:");
 console.dir(createTableInput, { depth: null });
 
 // Create the table
-ddb
-  .createTable(createTableInput)
-  .promise()
-  // Wait for it to become ready
-  .then(function () {
-    return ddb
-      .waitFor("tableExists", { TableName: config.tableName })
-      .promise();
-  })
-  .then(function () {
-    console.log("Table created and ready!");
-  });
+
+try {
+  await ddb.send(new CreateTableCommand(createTableInput));
+
+  await waitUntilTableExists(
+    { maxWaitTime: 200, client: ddb },
+    { TableName: config.tableName }
+  );
+
+  console.log("Table created and ready!");
+} catch (e) {
+  console.log(e);
+}
 ```
 
 ## Adding data
 
 ```js
-myGeoTableManager
-  .putPoint({
-    RangeKeyValue: { S: "1234" }, // Use this to ensure uniqueness of the hash/range pairs.
-    GeoPoint: {
-      // An object specifying latitutde and longitude as plain numbers. Used to build the geohash, the hashkey and geojson data
-      latitude: 51.51,
-      longitude: -0.13,
+await myGeoTableManager.putPoint({
+  RangeKeyValue: { S: "1234" }, // Use this to ensure uniqueness of the hash/range pairs.
+  GeoPoint: {
+    // An object specifying latitutde and longitude as plain numbers. Used to build the geohash, the hashkey and geojson data
+    latitude: 51.51,
+    longitude: -0.13,
+  },
+  PutItemInput: {
+    // Passed through to the underlying DynamoDB.putItem request. TableName is filled in for you.
+    Item: {
+      // The primary key, geohash and geojson data is filled in for you
+      country: { S: "UK" }, // Specify attribute values using { type: value } objects, like the DynamoDB API.
+      capital: { S: "London" },
     },
-    PutItemInput: {
-      // Passed through to the underlying DynamoDB.putItem request. TableName is filled in for you.
-      Item: {
-        // The primary key, geohash and geojson data is filled in for you
-        country: { S: "UK" }, // Specify attribute values using { type: value } objects, like the DynamoDB API.
-        capital: { S: "London" },
-      },
-      // ... Anything else to pass through to `putItem`, eg ConditionExpression
-    },
-  })
-  .promise()
-  .then(function () {
-    console.log("Done!");
-  });
+    // ... Anything else to pass through to `putItem`, eg ConditionExpression
+  },
+});
 ```
 
 See also [DynamoDB PutItem request][putitem]
@@ -135,26 +137,21 @@ Note that you cannot update the hash key, range key, geohash or geoJson. If you 
 You must specify a `RangeKeyValue`, a `GeoPoint`, and an `UpdateItemInput` matching the [DynamoDB UpdateItem][updateitem] request (`TableName` and `Key` are filled in for you).
 
 ```js
-myGeoTableManager
-  .updatePoint({
-    RangeKeyValue: { S: "1234" },
-    GeoPoint: {
-      // An object specifying latitutde and longitude as plain numbers.
-      latitude: 51.51,
-      longitude: -0.13,
+await myGeoTableManager.updatePoint({
+  RangeKeyValue: { S: "1234" },
+  GeoPoint: {
+    // An object specifying latitutde and longitude as plain numbers.
+    latitude: 51.51,
+    longitude: -0.13,
+  },
+  UpdateItemInput: {
+    // TableName and Key are filled in for you
+    UpdateExpression: "SET country = :newName",
+    ExpressionAttributeValues: {
+      ":newName": { S: "United Kingdom" },
     },
-    UpdateItemInput: {
-      // TableName and Key are filled in for you
-      UpdateExpression: "SET country = :newName",
-      ExpressionAttributeValues: {
-        ":newName": { S: "United Kingdom" },
-      },
-    },
-  })
-  .promise()
-  .then(function () {
-    console.log("Done!");
-  });
+  },
+});
 ```
 
 ## Deleting a specific point
@@ -162,25 +159,20 @@ myGeoTableManager
 You must specify a `RangeKeyValue` and a `GeoPoint`. Optionally, you can pass `DeleteItemInput` matching [DynamoDB DeleteItem][deleteitem] request (`TableName` and `Key` are filled in for you).
 
 ```js
-myGeoTableManager
-  .deletePoint({
-    RangeKeyValue: { S: "1234" },
-    GeoPoint: {
-      // An object specifying latitutde and longitude as plain numbers.
-      latitude: 51.51,
-      longitude: -0.13,
-    },
-    DeleteItemInput: {
-      // Optional, any additional parameters to pass through.
-      // TableName and Key are filled in for you
-      // Example: Only delete if the point does not have a country name set
-      ConditionExpression: "attribute_not_exists(country)",
-    },
-  })
-  .promise()
-  .then(function () {
-    console.log("Done!");
-  });
+await myGeoTableManager.deletePoint({
+  RangeKeyValue: { S: "1234" },
+  GeoPoint: {
+    // An object specifying latitutde and longitude as plain numbers.
+    latitude: 51.51,
+    longitude: -0.13,
+  },
+  DeleteItemInput: {
+    // Optional, any additional parameters to pass through.
+    // TableName and Key are filled in for you
+    // Example: Only delete if the point does not have a country name set
+    ConditionExpression: "attribute_not_exists(country)",
+  },
+});
 ```
 
 ## Rectangular queries
