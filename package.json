@@ -6,7 +6,7 @@
     "prepublish": "tsc -d",
     "clean": "rm -rf dist",
     "build": "tsc -d",
-    "test": "mocha --require ts-node/register test/**/*.ts",
+    "test": "jest",
     "format:fix": "npx prettier --write ."
   },
   "main": "dist/index.js",
