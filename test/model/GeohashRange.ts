@@ -1,5 +1,4 @@
 import { GeohashRange } from "../../src/model/GeohashRange";
-import { expect } from "chai";
 import * as Long from "long";
 
 describe("GeohashRange.trySplit", function () {
@@ -9,20 +8,20 @@ describe("GeohashRange.trySplit", function () {
   );
 
   it("returns the same range when nothing needs splitting", function () {
-    expect(range.trySplit(1)).to.deep.equal([range]);
-    expect(range.trySplit(3)).to.deep.equal([range]);
-    expect(range.trySplit(4)).to.deep.equal([range]);
-    expect(range.trySplit(5)).to.deep.equal([range]);
-    expect(range.trySplit(6)).to.deep.equal([range]);
-    expect(range.trySplit(7)).to.deep.equal([range]);
-    expect(range.trySplit(8)).to.deep.equal([range]);
-    expect(range.trySplit(9)).to.deep.equal([range]);
-    expect(range.trySplit(10)).to.deep.equal([range]);
-    expect(range.trySplit(11)).to.deep.equal([range]);
+    expect(range.trySplit(1)).toStrictEqual([range]);
+    expect(range.trySplit(3)).toStrictEqual([range]);
+    expect(range.trySplit(4)).toStrictEqual([range]);
+    expect(range.trySplit(5)).toStrictEqual([range]);
+    expect(range.trySplit(6)).toStrictEqual([range]);
+    expect(range.trySplit(7)).toStrictEqual([range]);
+    expect(range.trySplit(8)).toStrictEqual([range]);
+    expect(range.trySplit(9)).toStrictEqual([range]);
+    expect(range.trySplit(10)).toStrictEqual([range]);
+    expect(range.trySplit(11)).toStrictEqual([range]);
   });
 
   it("splits correctly on the given digit", function () {
-    expect(range.trySplit(12)).to.deep.equal([
+    expect(range.trySplit(12)).toStrictEqual([
       new GeohashRange(
         Long.fromString("1000000000000000000"),
         Long.fromString("1000000000009999999")
@@ -33,7 +32,7 @@ describe("GeohashRange.trySplit", function () {
       ),
     ]);
 
-    expect(range.trySplit(13)).to.deep.equal([
+    expect(range.trySplit(13)).toStrictEqual([
       new GeohashRange(
         Long.fromString("1000000000000000000"),
         Long.fromString("1000000000000999999")

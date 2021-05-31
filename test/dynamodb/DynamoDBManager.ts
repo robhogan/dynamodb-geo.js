@@ -1,25 +1,18 @@
 import { DynamoDBManager } from "../../src/dynamodb/DynamoDBManager";
-import { expect } from "chai";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GeoDataManagerConfiguration } from "../../src";
+import { mock, MockProxy } from "jest-mock-extended";
+
+jest.mock("@aws-sdk/client-dynamodb");
 
 describe("DynamoDBManager.deletePoint", () => {
-  it("calls deleteItem with the correct arguments ", () => {
-    let called = false;
-    const config = new GeoDataManagerConfiguration(
-      {
-        deleteItem: (args: any) => {
-          called = true;
-          expect(args).to.deep.equal({
-            TableName: "MyTable",
-            Key: {
-              hashKey: { N: "44" },
-              rangeKey: { S: "1234" },
-            },
-          });
-        },
-      },
-      "MyTable"
-    );
+  let dbClient: MockProxy<DynamoDBClient>;
+  beforeEach(async () => {
+    dbClient = mock<DynamoDBClient>();
+    dbClient.send.mockResolvedValue({} as never);
+  });
+  test("calls deleteItem with the correct arguments ", () => {
+    const config = new GeoDataManagerConfiguration(dbClient, "MyTable");
 
     const ddb = new DynamoDBManager(config);
 
@@ -31,33 +24,21 @@ describe("DynamoDBManager.deletePoint", () => {
       },
     });
 
-    expect(called).to.be.true;
+    expect(dbClient.send).toBeCalledTimes(1);
+    // expect(called).to.be.true;
   });
 });
 
 describe("DynamoDBManager.putPoint", () => {
+  let dbClient: MockProxy<DynamoDBClient>;
+
+  beforeEach(async () => {
+    dbClient = mock<DynamoDBClient>();
+    dbClient.send.mockResolvedValue({} as never);
+  });
+
   it("calls putItem with the correct arguments ", () => {
-    let called = false;
-    const config = new GeoDataManagerConfiguration(
-      {
-        putItem: (args: any) => {
-          called = true;
-          expect(args).to.deep.equal({
-            TableName: "MyTable",
-            Item: {
-              geoJson: { S: '{"type":"Point","coordinates":[-0.13,51.51]}' },
-              geohash: { N: "5221366118452580119" },
-              hashKey: { N: "52" },
-              rangeKey: { S: "1234" },
-              country: { S: "UK" },
-              capital: { S: "London" },
-            },
-            ConditionExpression: "attribute_not_exists(capital)",
-          });
-        },
-      },
-      "MyTable"
-    );
+    const config = new GeoDataManagerConfiguration(dbClient, "MyTable");
 
     const ddb: any = new DynamoDBManager(config);
 
@@ -79,6 +60,6 @@ describe("DynamoDBManager.putPoint", () => {
       },
     });
 
-    expect(called).to.be.true;
+    expect(dbClient.send).toBeCalledTimes(1);
   });
 });

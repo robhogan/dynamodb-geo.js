@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import { DynamoDB } from "aws-sdk";
+import { CreateTableInput } from "@aws-sdk/client-dynamodb";
 import { GeoDataManagerConfiguration } from "../GeoDataManagerConfiguration";
 /**
  * Utility class.
@@ -39,7 +39,7 @@ export class GeoTableUtil {
    */
   public static getCreateTableRequest(
     config: GeoDataManagerConfiguration
-  ): DynamoDB.CreateTableInput {
+  ): CreateTableInput {
     return {
       TableName: config.tableName,
       ProvisionedThroughput: {

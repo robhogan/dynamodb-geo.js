@@ -14,24 +14,32 @@
   "repository": "rh389/dynamodb-geo.js",
   "author": "Rob Hogan <github@rhogan.net>",
   "license": "Apache-2.0",
+  "jest": {
+    "verbose": true,
+    "testMatch": [
+      "**/test/**/*.[jt]s"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
+  },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.17.0",
-    "@types/decimal.js": "^7.4.0",
-    "@types/long": "^4.0.1",
+    "@aws-sdk/util-waiter": "^3.15.0",
     "aws-sdk": "^2.918.0",
     "nodes2ts": "^2.0.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.18",
-    "@types/mocha": "^8.2.2",
+    "@types/decimal.js": "^7.4.0",
+    "@types/jest": "^26.0.23",
+    "@types/long": "^4.0.1",
     "@types/node": "^15.6.1",
-    "chai": "^4.3.4",
-    "mocha": "^8.4.0",
+    "dynalite": "^3.2.1",
+    "jest": "^27.0.3",
+    "jest-mock-extended": "^1.0.15",
     "prettier": "2.3.0",
+    "ts-jest": "^27.0.1",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
-  },
-  "peerDependencies": {
-    "aws-sdk": "^2.176.0"
   }
 }

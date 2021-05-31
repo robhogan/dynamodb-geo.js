@@ -38,7 +38,6 @@ export class S2Util {
       centerPoint.latitude,
       centerPoint.longitude
     );
-
     const latReferenceUnit = centerPoint.latitude > 0.0 ? -1.0 : 1.0;
     const latReferenceLatLng = S2LatLng.fromDegrees(
       centerPoint.latitude + latReferenceUnit,
@@ -49,13 +48,11 @@ export class S2Util {
       centerPoint.latitude,
       centerPoint.longitude + lngReferenceUnit
     );
-
     const latForRadius =
-      radiusInMeter /
-      (centerLatLng.getEarthDistance(latReferenceLatLng) as any).toNumber();
+      radiusInMeter / centerLatLng.getEarthDistance(latReferenceLatLng);
+
     const lngForRadius =
-      radiusInMeter /
-      (centerLatLng.getEarthDistance(lngReferenceLatLng) as any).toNumber();
+      radiusInMeter / centerLatLng.getEarthDistance(lngReferenceLatLng);
 
     const minLatLng = S2LatLng.fromDegrees(
       centerPoint.latitude - latForRadius,

@@ -33,6 +33,7 @@ import { S2Manager } from "./s2/S2Manager";
 import { S2Util } from "./s2/S2Util";
 import { S2LatLng, S2LatLngRect } from "nodes2ts";
 import { Covering } from "./model/Covering";
+import { ItemResponse, QueryOutput } from "@aws-sdk/client-dynamodb";
 
 /**
  * <p>
@@ -110,9 +111,7 @@ export class GeoDataManager {
    *
    * @return Result of put point request.
    */
-  public putPoint(
-    putPointInput: PutPointInput
-  ): Request<PutPointOutput, AWSError> {
+  public putPoint(putPointInput: PutPointInput): Promise<PutPointOutput> {
     return this.dynamoDBManager.putPoint(putPointInput);
   }
 
@@ -143,7 +142,7 @@ export class GeoDataManager {
    */
   public batchWritePoints(
     putPointInputs: PutPointInput[]
-  ): Request<BatchWritePointOutput, AWSError> {
+  ): Promise<BatchWritePointOutput> {
     return this.dynamoDBManager.batchWritePoints(putPointInputs);
   }
 
@@ -168,9 +167,7 @@ export class GeoDataManager {
    *
    * @return Result of get point request.
    * */
-  public getPoint(
-    getPointInput: GetPointInput
-  ): Request<GetPointOutput, AWSError> {
+  public getPoint(getPointInput: GetPointInput): Promise<GetPointOutput> {
     return this.dynamoDBManager.getPoint(getPointInput);
   }
 
@@ -201,7 +198,7 @@ export class GeoDataManager {
    */
   public async queryRectangle(
     queryRectangleInput: QueryRectangleInput
-  ): Promise<DynamoDB.ItemList> {
+  ): Promise<Record<string, any>[]> {
     const latLngRect: S2LatLngRect =
       S2Util.latLngRectFromQueryRectangleInput(queryRectangleInput);
 
@@ -237,7 +234,7 @@ export class GeoDataManager {
    * */
   public async queryRadius(
     queryRadiusInput: QueryRadiusInput
-  ): Promise<DynamoDB.ItemList> {
+  ): Promise<Record<string, any>[]> {
     const latLngRect: S2LatLngRect =
       S2Util.getBoundingLatLngRectFromQueryRadiusInput(queryRadiusInput);
 
@@ -280,7 +277,7 @@ export class GeoDataManager {
    */
   public updatePoint(
     updatePointInput: UpdatePointInput
-  ): Request<UpdatePointOutput, AWSError> {
+  ): Promise<UpdatePointOutput> {
     return this.dynamoDBManager.updatePoint(updatePointInput);
   }
 
@@ -307,7 +304,7 @@ export class GeoDataManager {
    */
   public deletePoint(
     deletePointInput: DeletePointInput
-  ): Request<DeletePointOutput, AWSError> {
+  ): Promise<DeletePointOutput> {
     return this.dynamoDBManager.deletePoint(deletePointInput);
   }
 
@@ -326,7 +323,7 @@ export class GeoDataManager {
     covering: Covering,
     geoQueryInput: GeoQueryInput
   ) {
-    const promises: Promise<DynamoDB.QueryOutput[]>[] = covering
+    const promises: Promise<QueryOutput[]>[] = covering
       .getGeoHashRanges(this.config.hashKeyLength)
       .map((range) => {
         const hashKey = S2Manager.generateHashKey(
@@ -340,7 +337,7 @@ export class GeoDataManager {
         );
       });
 
-    const results: DynamoDB.QueryOutput[][] = await Promise.all(promises);
+    const results: QueryOutput[][] = await Promise.all(promises);
     const mergedResults = [];
     results.forEach((queryOutputs) =>
       queryOutputs.forEach((queryOutput) =>
@@ -358,9 +355,9 @@ export class GeoDataManager {
    * @returns DynamoDB.ItemList
    */
   private filterByRadius(
-    list: DynamoDB.ItemList,
+    list: Record<string, any>[],
     geoQueryInput: QueryRadiusInput
-  ): DynamoDB.ItemList {
+  ): Record<string, any>[] {
     let centerLatLng: S2LatLng = null;
     let radiusInMeter = 0;
 
@@ -379,10 +376,7 @@ export class GeoDataManager {
       const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
 
       const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
-      return (
-        (centerLatLng.getEarthDistance(latLng) as any).toNumber() <=
-        radiusInMeter
-      );
+      return centerLatLng.getEarthDistance(latLng) <= radiusInMeter;
     });
   }
 
@@ -394,9 +388,9 @@ export class GeoDataManager {
    * @returns DynamoDB.ItemList
    */
   private filterByRectangle(
-    list: DynamoDB.ItemList,
+    list: Record<string, any>[],
     geoQueryInput: QueryRectangleInput
-  ): DynamoDB.ItemList {
+  ): Record<string, any>[] {
     const latLngRect: S2LatLngRect =
       S2Util.latLngRectFromQueryRectangleInput(geoQueryInput);
 

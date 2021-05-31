@@ -109,7 +109,7 @@ export class DynamoDBManager {
         await this.config.dynamoDBClient.send(
           new QueryCommand({ ...defaults, ...queryInput })
         );
-      // const queryOutput = await this.config.dynamoDBClient.query({ ...defaults, ...queryInput }).promise();
+
       queryOutputs.push(queryOutput);
       if (queryOutput.LastEvaluatedKey) {
         return nextQuery(queryOutput.LastEvaluatedKey);

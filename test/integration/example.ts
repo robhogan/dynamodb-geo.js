@@ -1,16 +1,23 @@
 import * as ddbGeo from "../../src";
-import * as AWS from "aws-sdk";
-import { expect } from "chai";
-
-AWS.config.update({
-  accessKeyId: "dummy",
-  secretAccessKey: "dummy",
-  region: "eu-west-1",
-});
+import {
+  CreateTableCommand,
+  DeleteTableCommand,
+  DynamoDBClient,
+  waitUntilTableExists,
+} from "@aws-sdk/client-dynamodb";
+import { inspect } from "util";
+// AWS.config.update({
+//   accessKeyId: "dummy",
+//   secretAccessKey: "dummy",
+//   region: "eu-west-1",
+// });
 
 describe("Example", function () {
   // Use a local DB for the example.
-  const ddb = new AWS.DynamoDB({ endpoint: "http://127.0.0.1:8000" });
+  const ddb = new DynamoDBClient({
+    endpoint: "http://localhost:4567",
+    region: "abc",
+  });
 
   // Configuration for a new instance of a GeoDataManager. Each GeoDataManager instance represents a table
   const config = new ddbGeo.GeoDataManagerConfiguration(ddb, "test-capitals");
@@ -18,21 +25,26 @@ describe("Example", function () {
   // Instantiate the table manager
   const capitalsManager = new ddbGeo.GeoDataManager(config);
 
-  before(async function () {
-    this.timeout(20000);
+  beforeAll(async () => {
     config.hashKeyLength = 3;
     config.consistentRead = true;
 
     // Use GeoTableUtil to help construct a CreateTableInput.
     const createTableInput = ddbGeo.GeoTableUtil.getCreateTableRequest(config);
     createTableInput.ProvisionedThroughput.ReadCapacityUnits = 2;
-    await ddb.createTable(createTableInput).promise();
+
+    await ddb.send(new CreateTableCommand(createTableInput));
     // Wait for it to become ready
-    await ddb.waitFor("tableExists", { TableName: config.tableName }).promise();
+    await waitUntilTableExists(
+      { maxWaitTime: 200, client: ddb },
+      { TableName: config.tableName }
+    );
     // Load sample data in batches
 
+    console.log("Table created");
     console.log("Loading sample data from capitals.json");
     const data = require("../../example/capitals.json");
+    console.log(data.length);
     const putPointInputs = data.map(function (capital, i) {
       return {
         RangeKeyValue: { S: String(i) }, // Use this to ensure uniqueness of the hash/range pairs.
@@ -52,38 +64,31 @@ describe("Example", function () {
     const BATCH_SIZE = 25;
     const WAIT_BETWEEN_BATCHES_MS = 1000;
     let currentBatch = 1;
-
-    async function resumeWriting() {
-      if (putPointInputs.length === 0) {
-        console.log("Finished loading");
-        return;
-      }
-      const thisBatch = [];
-      for (
-        var i = 0, itemToAdd = null;
-        i < BATCH_SIZE && (itemToAdd = putPointInputs.shift());
-        i++
-      ) {
+    let itemToAdd;
+    do {
+      let thisBatch = [];
+      do {
+        itemToAdd = putPointInputs.shift();
         thisBatch.push(itemToAdd);
-      }
+      } while (thisBatch.length < BATCH_SIZE && putPointInputs.length > 0);
+
       console.log(
         "Writing batch " +
           currentBatch++ +
           "/" +
           Math.ceil(data.length / BATCH_SIZE)
       );
-      await capitalsManager.batchWritePoints(thisBatch).promise();
+
+      await capitalsManager.batchWritePoints(thisBatch);
+      thisBatch = [];
       // Sleep
       await new Promise((resolve) =>
-        setInterval(resolve, WAIT_BETWEEN_BATCHES_MS)
+        setTimeout(resolve, WAIT_BETWEEN_BATCHES_MS)
       );
-      return resumeWriting();
-    }
-    return resumeWriting();
-  });
+    } while (putPointInputs.length > 0);
+  }, 40000);
 
-  it("queryRadius", async function () {
-    this.timeout(20000);
+  test("queryRadius", async function () {
     // Perform a radius query
     const result = await capitalsManager.queryRadius({
       RadiusInMeter: 100000,
@@ -93,7 +98,7 @@ describe("Example", function () {
       },
     });
 
-    expect(result).to.deep.equal([
+    expect(result).toEqual([
       {
         rangeKey: { S: "50" },
         country: { S: "United Kingdom" },
@@ -103,10 +108,9 @@ describe("Example", function () {
         geohash: { N: "5221366118452580119" },
       },
     ]);
-  });
+  }, 20000);
 
-  after(async function () {
-    this.timeout(10000);
-    await ddb.deleteTable({ TableName: config.tableName }).promise();
-  });
+  afterAll(async function () {
+    await ddb.send(new DeleteTableCommand({ TableName: config.tableName }));
+  }, 30000);
 });
