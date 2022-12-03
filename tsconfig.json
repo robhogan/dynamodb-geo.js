@@ -1,13 +1,16 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "es2020",
         "noImplicitAny": false,
         "sourceMap": false,
         "outDir": "dist",
+        "esModuleInterop": true,
         "lib": [
-            "es2015"
-        ]
+            "es2020", "dom"
+        ],
+      "types": ["node", "mocha"]
     },
+
     "include": [ "src/**/*" ]
 }

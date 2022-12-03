@@ -1,6 +1,6 @@
 {
   "name": "dynamodb-geo",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A javascript port of awslabs/dynamodb-geo, for dynamodb geospatial querying",
   "scripts": {
     "prepublish": "tsc -d",
@@ -14,21 +14,23 @@
   "author": "Rob Hogan <github@rhogan.net>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/decimal.js": "^0.0.30",
-    "@types/long": ">=3",
-    "nodes2ts": "^1.1.10"
+    "@aws-sdk/client-dynamodb": "^3.216.0",
+    "@aws-sdk/lib-dynamodb": "^3.216.0",
+    "@aws-sdk/util-dynamodb": "^3.216.0",
+    "long": "^4.0.0",
+    "nodes2ts": "^3.0.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/mocha": "^2.2.41",
+    "@types/chai": "^4.3.4",
+    "@types/decimal.js": "^0.0.32",
+    "@types/long": "^5.0.0",
+    "@types/mocha": "^10.0.0",
     "@types/node": "^7.0.27",
-    "aws-sdk": "^2.248.1",
-    "chai": "^4.0.1",
-    "mocha": "^3.3.0",
-    "ts-node": "^3.0.2",
-    "typescript": "^2.3.4"
-  },
-  "peerDependencies": {
-    "aws-sdk": "^2.176.0"
+    "chai": "^4.3.7",
+    "i": "^0.3.7",
+    "mocha": "^10.1.0",
+    "npm": "^9.1.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
   }
 }

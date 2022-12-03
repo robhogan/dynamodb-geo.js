@@ -13,9 +13,9 @@
  * permissions and limitations under the License.
  */
 
+import Long from "long";
 import { S2Cell, S2LatLng } from "nodes2ts";
 import { GeoPoint } from "../types";
-import * as Long from "long";
 
 export class S2Manager {
   static generateGeohash(geoPoint: GeoPoint) {
@@ -25,7 +25,7 @@ export class S2Manager {
     return cellId.id;
   }
 
-  public static generateHashKey(geohash: Long, hashKeyLength: number) {
+  public static generateHashKey(geohash: Long, hashKeyLength: number): Long {
     if (geohash.lessThan(0)) {
       // Counteract "-" at beginning of geohash.
       hashKeyLength++;

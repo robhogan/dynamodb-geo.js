@@ -12,11 +12,11 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-import { DynamoDB } from "aws-sdk";
+
 import { S2RegionCoverer } from "nodes2ts";
+import { DynamoDB } from "@aws-sdk/client-dynamodb";
 
 export class GeoDataManagerConfiguration {
-
   // Public constants
   static MERGE_THRESHOLD = 2;
 
@@ -54,7 +54,7 @@ export class GeoDataManagerConfiguration {
    *
    * @type {string}
    */
-  geoJsonPointType: 'Point' | 'POINT' = 'Point';
+  geoJsonPointType: "Point" | "POINT" = "Point";
 
   dynamoDBClient: DynamoDB;
 
