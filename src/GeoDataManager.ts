@@ -1,40 +1,40 @@
 /*
  * Copyright 2010-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
  * A copy of the License is located at
- * 
+ *
  * http://aws.amazon.com/apache2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
 
-import { AWSError, DynamoDB, Request } from "aws-sdk";
-import { DynamoDBManager } from "./dynamodb/DynamoDBManager";
-import { GeoDataManagerConfiguration } from "./GeoDataManagerConfiguration";
+import { AWSError, DynamoDB, Request } from 'aws-sdk';
+import { S2LatLng, S2LatLngRect } from 'nodes2ts';
+import { DynamoDBManager } from './dynamodb/DynamoDBManager';
+import { GeoDataManagerConfiguration } from './GeoDataManagerConfiguration';
+import { Covering } from './model/Covering';
+import { S2Manager } from './s2/S2Manager';
+import { S2Util } from './s2/S2Util';
 import {
-  BatchWritePointOutput,
-  DeletePointInput,
-  DeletePointOutput,
-  GeoPoint,
-  GeoQueryInput,
-  GetPointInput,
-  GetPointOutput,
-  PutPointInput,
-  PutPointOutput,
-  QueryRadiusInput,
-  QueryRectangleInput,
-  UpdatePointInput,
-  UpdatePointOutput
-} from "./types";
-import { S2Manager } from "./s2/S2Manager";
-import { S2Util } from "./s2/S2Util";
-import { S2LatLng, S2LatLngRect } from "nodes2ts";
-import { Covering } from "./model/Covering";
+    BatchWritePointOutput,
+    DeletePointInput,
+    DeletePointOutput,
+    GeoPoint,
+    GeoQueryInput,
+    GetPointInput,
+    GetPointOutput,
+    PutPointInput,
+    PutPointOutput,
+    QueryRadiusInput,
+    QueryRectangleInput,
+    UpdatePointInput,
+    UpdatePointOutput,
+} from './types';
 
 /**
  * <p>
@@ -47,10 +47,10 @@ import { Covering } from "./model/Covering";
  * </p>
  * */
 export class GeoDataManager {
-  private config: GeoDataManagerConfiguration;
-  private dynamoDBManager: DynamoDBManager;
+    private config: GeoDataManagerConfiguration;
+    private dynamoDBManager: DynamoDBManager;
 
-  /**
+    /**
    * <p>
    * Construct and configure GeoDataManager using GeoDataManagerConfiguration.
    * </p>
@@ -71,12 +71,12 @@ export class GeoDataManager {
    * @param config
    *            Container for the configuration parameters for GeoDataManager.
    */
-  constructor(config: GeoDataManagerConfiguration) {
-    this.config = config;
-    this.dynamoDBManager = new DynamoDBManager(this.config);
-  }
+    constructor(config: GeoDataManagerConfiguration) {
+        this.config = config;
+        this.dynamoDBManager = new DynamoDBManager(this.config);
+    }
 
-  /**
+    /**
    * <p>
    * Return GeoDataManagerConfiguration. The returned GeoDataManagerConfiguration should not be modified.
    * </p>
@@ -84,11 +84,11 @@ export class GeoDataManager {
    * @return
    *         GeoDataManagerConfiguration that is used to configure this GeoDataManager.
    */
-  public getGeoDataManagerConfiguration() {
-    return this.config;
-  }
+    public getGeoDataManagerConfiguration() {
+        return this.config;
+    }
 
-  /**
+    /**
    * <p>
    * Put a point into the Amazon DynamoDB table. Once put, you cannot update attributes specified in
    * GeoDataManagerConfiguration: hash key, range key, geohash and geoJson. If you want to update these columns, you
@@ -112,11 +112,11 @@ export class GeoDataManager {
    *
    * @return Result of put point request.
    */
-  public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
-    return this.dynamoDBManager.putPoint(putPointInput);
-  }
+    public putPoint(putPointInput: PutPointInput): Request<PutPointOutput, AWSError> {
+        return this.dynamoDBManager.putPoint(putPointInput);
+    }
 
-  /**
+    /**
    * <p>
    * Put a list of points into the Amazon DynamoDB table. Once put, you cannot update attributes specified in
    * GeoDataManagerConfiguration: hash key, range key, geohash and geoJson. If you want to update these columns, you
@@ -141,11 +141,11 @@ export class GeoDataManager {
    *
    * @return Result of batch put point request.
    */
-  public batchWritePoints(putPointInputs: PutPointInput[]): Request<BatchWritePointOutput, AWSError> {
-    return this.dynamoDBManager.batchWritePoints(putPointInputs);
-  }
+    public batchWritePoints(putPointInputs: PutPointInput[]): Request<BatchWritePointOutput, AWSError> {
+        return this.dynamoDBManager.batchWritePoints(putPointInputs);
+    }
 
-  /**
+    /**
    * <p>
    * Get a point from the Amazon DynamoDB table.
    * </p>
@@ -166,11 +166,11 @@ export class GeoDataManager {
    *
    * @return Result of get point request.
    * */
-  public getPoint(getPointInput: GetPointInput): Request<GetPointOutput, AWSError> {
-    return this.dynamoDBManager.getPoint(getPointInput);
-  }
+    public getPoint(getPointInput: GetPointInput): Request<GetPointOutput, AWSError> {
+        return this.dynamoDBManager.getPoint(getPointInput);
+    }
 
-  /**
+    /**
    * <p>
    * Query a rectangular area constructed by two points and return all points within the area. Two points need to
    * construct a rectangle from minimum and maximum latitudes and longitudes. If minPoint.getLongitude() >
@@ -195,16 +195,16 @@ export class GeoDataManager {
    *
    * @return Result of rectangle query request.
    */
-  public async queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
-    const latLngRect: S2LatLngRect = S2Util.latLngRectFromQueryRectangleInput(queryRectangleInput);
+    public async queryRectangle(queryRectangleInput: QueryRectangleInput): Promise<DynamoDB.ItemList> {
+        const latLngRect: S2LatLngRect = S2Util.latLngRectFromQueryRectangleInput(queryRectangleInput);
 
-    const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
+        const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
 
-    const results = await this.dispatchQueries(covering, queryRectangleInput);
-    return this.filterByRectangle(results, queryRectangleInput);
-  }
+        const results = await this.dispatchQueries(covering, queryRectangleInput);
+        return this.filterByRectangle(results, queryRectangleInput);
+    }
 
-  /**
+    /**
    * <p>
    * Query a circular area constructed by a center point and its radius.
    * </p>
@@ -226,16 +226,16 @@ export class GeoDataManager {
    *
    * @return Result of radius query request.
    * */
-  public async queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
-    const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRectFromQueryRadiusInput(queryRadiusInput);
+    public async queryRadius(queryRadiusInput: QueryRadiusInput): Promise<DynamoDB.ItemList> {
+        const latLngRect: S2LatLngRect = S2Util.getBoundingLatLngRectFromQueryRadiusInput(queryRadiusInput);
 
-    const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
+        const covering = new Covering(new this.config.S2RegionCoverer().getCoveringCells(latLngRect));
 
-    const results = await this.dispatchQueries(covering, queryRadiusInput);
-    return this.filterByRadius(results, queryRadiusInput);
-  }
+        const results = await this.dispatchQueries(covering, queryRadiusInput);
+        return this.filterByRadius(results, queryRadiusInput);
+    }
 
-  /**
+    /**
    * <p>
    * Update a point data in Amazon DynamoDB table. You cannot update attributes specified in
    * GeoDataManagerConfiguration: hash key, range key, geohash and geoJson. If you want to update these columns, you
@@ -264,11 +264,11 @@ export class GeoDataManager {
    *
    * @return Result of update point request.
    */
-  public updatePoint(updatePointInput: UpdatePointInput): Request<UpdatePointOutput, AWSError> {
-    return this.dynamoDBManager.updatePoint(updatePointInput);
-  }
+    public updatePoint(updatePointInput: UpdatePointInput): Request<UpdatePointOutput, AWSError> {
+        return this.dynamoDBManager.updatePoint(updatePointInput);
+    }
 
-  /**
+    /**
    * <p>
    * Delete a point from the Amazon DynamoDB table.
    * </p>
@@ -289,11 +289,11 @@ export class GeoDataManager {
    *
    * @return Result of delete point request.
    */
-  public deletePoint(deletePointInput: DeletePointInput): Request<DeletePointOutput, AWSError> {
-    return this.dynamoDBManager.deletePoint(deletePointInput);
-  }
+    public deletePoint(deletePointInput: DeletePointInput): Request<DeletePointOutput, AWSError> {
+        return this.dynamoDBManager.deletePoint(deletePointInput);
+    }
 
-  /**
+    /**
    * Query Amazon DynamoDB in parallel and filter the result.
    *
    * @param covering
@@ -304,63 +304,63 @@ export class GeoDataManager {
    *
    * @return Aggregated and filtered items returned from Amazon DynamoDB.
    */
-  private async dispatchQueries(covering: Covering, geoQueryInput: GeoQueryInput) {
-    const promises: Promise<DynamoDB.QueryOutput[]>[] = covering.getGeoHashRanges(this.config.hashKeyLength).map(range => {
-      const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
-      return this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range);
-    });
+    private async dispatchQueries(covering: Covering, geoQueryInput: GeoQueryInput) {
+        const promises: Promise<DynamoDB.QueryOutput[]>[] = covering.getGeoHashRanges(this.config.hashKeyLength).map(range => {
+            const hashKey = S2Manager.generateHashKey(range.rangeMin, this.config.hashKeyLength);
+            return this.dynamoDBManager.queryGeohash(geoQueryInput.QueryInput, hashKey, range);
+        });
 
-    const results: DynamoDB.QueryOutput[][] = await Promise.all(promises);
-    const mergedResults = [];
-    results.forEach(queryOutputs => queryOutputs.forEach(queryOutput => mergedResults.push(...queryOutput.Items)));
-    return mergedResults;
-  }
+        const results: DynamoDB.QueryOutput[][] = await Promise.all(promises);
+        const mergedResults = [];
+        results.forEach(queryOutputs => queryOutputs.forEach(queryOutput => mergedResults.push(...queryOutput.Items)));
+        return mergedResults;
+    }
 
-  /**
+    /**
    * Filter out any points outside of the queried area from the input list.
    *
    * @param list
    * @param geoQueryInput
    * @returns DynamoDB.ItemList
    */
-  private filterByRadius(list: DynamoDB.ItemList, geoQueryInput: QueryRadiusInput): DynamoDB.ItemList {
-    let centerLatLng: S2LatLng = null;
-    let radiusInMeter = 0;
+    private filterByRadius(list: DynamoDB.ItemList, geoQueryInput: QueryRadiusInput): DynamoDB.ItemList {
+        let centerLatLng: S2LatLng = null;
+        let radiusInMeter = 0;
 
-    const centerPoint: GeoPoint = (geoQueryInput as QueryRadiusInput).CenterPoint;
-    centerLatLng = S2LatLng.fromDegrees(centerPoint.latitude, centerPoint.longitude);
-    radiusInMeter = (geoQueryInput as QueryRadiusInput).RadiusInMeter;
+        const centerPoint: GeoPoint = (geoQueryInput as QueryRadiusInput).CenterPoint;
+        centerLatLng = S2LatLng.fromDegrees(centerPoint.latitude, centerPoint.longitude);
+        radiusInMeter = (geoQueryInput as QueryRadiusInput).RadiusInMeter;
 
 
-    return list.filter(item => {
-      const geoJson: string = item[this.config.geoJsonAttributeName].S;
-      const coordinates = JSON.parse(geoJson).coordinates;
-      const longitude = coordinates[this.config.longitudeFirst ? 0 : 1];
-      const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
+        return list.filter(item => {
+            const geoJson: string = item[this.config.geoJsonAttributeName].S;
+            const coordinates = JSON.parse(geoJson).coordinates;
+            const longitude = coordinates[this.config.longitudeFirst ? 0 : 1];
+            const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
 
-      const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
-      return (centerLatLng.getEarthDistance(latLng) as any).toNumber() <= radiusInMeter;
-    });
-  }
+            const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
+            return (centerLatLng.getEarthDistance(latLng) as any).toNumber() <= radiusInMeter;
+        });
+    }
 
-  /**
+    /**
    * Filter out any points outside of the queried area from the input list.
    *
    * @param list
    * @param geoQueryInput
    * @returns DynamoDB.ItemList
    */
-  private filterByRectangle(list: DynamoDB.ItemList, geoQueryInput: QueryRectangleInput): DynamoDB.ItemList {
-    const latLngRect: S2LatLngRect = S2Util.latLngRectFromQueryRectangleInput(geoQueryInput);
+    private filterByRectangle(list: DynamoDB.ItemList, geoQueryInput: QueryRectangleInput): DynamoDB.ItemList {
+        const latLngRect: S2LatLngRect = S2Util.latLngRectFromQueryRectangleInput(geoQueryInput);
 
-    return list.filter(item => {
-      const geoJson: string = item[this.config.geoJsonAttributeName].S;
-      const coordinates = JSON.parse(geoJson).coordinates;
-      const longitude = coordinates[this.config.longitudeFirst ? 0 : 1];
-      const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
+        return list.filter(item => {
+            const geoJson: string = item[this.config.geoJsonAttributeName].S;
+            const coordinates = JSON.parse(geoJson).coordinates;
+            const longitude = coordinates[this.config.longitudeFirst ? 0 : 1];
+            const latitude = coordinates[this.config.longitudeFirst ? 1 : 0];
 
-      const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
-      return latLngRect.containsLL(latLng);
-    });
-  }
+            const latLng: S2LatLng = S2LatLng.fromDegrees(latitude, longitude);
+            return latLngRect.containsLL(latLng);
+        });
+    }
 }

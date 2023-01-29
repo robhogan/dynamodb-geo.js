@@ -1,34 +1,45 @@
 {
-  "name": "dynamodb-geo",
-  "version": "0.4.0",
-  "description": "A javascript port of awslabs/dynamodb-geo, for dynamodb geospatial querying",
-  "scripts": {
-    "prepublish": "tsc -d",
-    "clean": "rm -rf dist",
-    "build": "tsc -d",
-    "test": "mocha --require ts-node/register test/**/*.ts"
-  },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "repository": "rh389/dynamodb-geo.js",
-  "author": "Rob Hogan <github@rhogan.net>",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "@types/decimal.js": "^0.0.30",
-    "@types/long": ">=3",
-    "nodes2ts": "^1.1.10"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.27",
-    "aws-sdk": "^2.248.1",
-    "chai": "^4.0.1",
-    "mocha": "^3.3.0",
-    "ts-node": "^3.0.2",
-    "typescript": "^2.3.4"
-  },
-  "peerDependencies": {
-    "aws-sdk": "^2.176.0"
-  }
+    "name": "dynamodb-geo",
+    "version": "0.5.0",
+    "description": "A typescript port of awslabs/dynamodb-geo, for dynamodb geospatial querying",
+    "scripts": {
+        "prepublish": "tsc -d",
+        "clean": "rm -rf dist",
+        "build": "tsc -d",
+        "test": "mocha --require ts-node/register test/**/*.ts"
+    },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "repository": "macmannes/dynamodb-geo",
+    "author": "Rob Hogan <github@rhogan.net>",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@types/decimal.js": "^0.0.30",
+        "@types/long": ">=3",
+        "long": "^5.2.1",
+        "nodes2ts": "^3.0.0",
+        "aws-sdk": "^2.1304.0"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.0.0",
+        "@types/mocha": "^2.2.41",
+        "@types/node": "18.11.18",
+        "@typescript-eslint/eslint-plugin": "5.48.0",
+        "@typescript-eslint/parser": "5.48.0",
+        "@vitest/coverage-istanbul": "^0.28.2",
+        "chai": "^4.0.1",
+        "eslint": "^8.32.0",
+        "eslint-import-resolver-typescript": "3.5.2",
+        "eslint-plugin-import": "2.26.0",
+        "eslint-plugin-vitest": "^0.0.32",
+        "mocha": "^3.3.0",
+        "ts-node": "10.9.1",
+        "typescript": "^4.9.4",
+        "vite": "^4.0.4",
+        "vitest": "^0.28.2",
+        "vitest-fetch-mock": "^0.2.1"
+    },
+    "peerDependencies": {
+        "aws-sdk": "^2.176.0"
+    }
 }

@@ -12,29 +12,29 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-import { DynamoDB } from "aws-sdk";
-import { S2RegionCoverer } from "nodes2ts";
+import { DynamoDB } from 'aws-sdk';
+import { S2RegionCoverer } from 'nodes2ts';
 
 export class GeoDataManagerConfiguration {
 
-  // Public constants
-  static MERGE_THRESHOLD = 2;
+    // Public constants
+    static MERGE_THRESHOLD = 2;
 
-  // Configuration properties
-  tableName: string;
+    // Configuration properties
+    tableName: string;
 
-  consistentRead: boolean = false;
+    consistentRead: boolean = false;
 
-  hashKeyAttributeName: string = "hashKey";
-  rangeKeyAttributeName: string = "rangeKey";
-  geohashAttributeName: string = "geohash";
-  geoJsonAttributeName: string = "geoJson";
+    hashKeyAttributeName: string = 'hashKey';
+    rangeKeyAttributeName: string = 'rangeKey';
+    geohashAttributeName: string = 'geohash';
+    geoJsonAttributeName: string = 'geoJson';
 
-  geohashIndexName: string = "geohash-index";
+    geohashIndexName: string = 'geohash-index';
 
-  hashKeyLength: number = 2;
+    hashKeyLength: number = 2;
 
-  /**
+    /**
    * The order of the GeoJSON coordinate pair in data.
    * Use false [lat, lon] for compatibility with the Java library https://github.com/awslabs/dynamodb-geo
    * Use true [lon, lat] for GeoJSON standard compliance. (default)
@@ -43,9 +43,9 @@ export class GeoDataManagerConfiguration {
    *
    * @type {boolean}
    */
-  longitudeFirst: boolean = true;
+    longitudeFirst: boolean = true;
 
-  /**
+    /**
    * The value of the 'type' attribute in recorded GeoJSON points. Should normally be 'Point', which is standards compliant.
    *
    * Use 'POINT' for compatibility with the Java library https://github.com/awslabs/dynamodb-geo
@@ -54,15 +54,15 @@ export class GeoDataManagerConfiguration {
    *
    * @type {string}
    */
-  geoJsonPointType: 'Point' | 'POINT' = 'Point';
+    geoJsonPointType: 'Point' | 'POINT' = 'Point';
 
-  dynamoDBClient: DynamoDB;
+    dynamoDBClient: DynamoDB;
 
-  S2RegionCoverer: typeof S2RegionCoverer;
+    S2RegionCoverer: typeof S2RegionCoverer;
 
-  constructor(dynamoDBClient, tableName: string) {
-    this.dynamoDBClient = dynamoDBClient;
-    this.tableName = tableName;
-    this.S2RegionCoverer = S2RegionCoverer;
-  }
+    constructor(dynamoDBClient, tableName: string) {
+        this.dynamoDBClient = dynamoDBClient;
+        this.tableName = tableName;
+        this.S2RegionCoverer = S2RegionCoverer;
+    }
 }

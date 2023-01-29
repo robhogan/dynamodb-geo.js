@@ -1,13 +1,19 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "ES2018",
         "noImplicitAny": false,
         "sourceMap": false,
+        "skipLibCheck": true,
         "outDir": "dist",
+        "esModuleInterop": true,
         "lib": [
-            "es2015"
-        ]
+            "es2018",
+        ],
+        "types": ["vitest/globals"]
     },
-    "include": [ "src/**/*" ]
+    "include": [ "src/**/*" ],
+    "exclude": [
+        "node_modules",
+    ]
 }

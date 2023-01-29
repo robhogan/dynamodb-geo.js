@@ -1,5 +1,5 @@
-import { S2CellId } from "nodes2ts";
-import { GeohashRange } from "./GeohashRange";
+import { S2CellId } from 'nodes2ts';
+import { GeohashRange } from './GeohashRange';
 
 export class Covering {
     private cellIds: S2CellId[];
