@@ -3,6 +3,9 @@
 # Geo Library for Amazon DynamoDB
 This project is an unofficial port of [awslabs/dynamodb-geo][dynamodb-geo], bringing creation and querying of geospatial data to Node JS developers using [Amazon DynamoDB][dynamodb].
 
+## AWS SDK JavaScript version
+This repository expects AWS SDK for JavaScript **v2**. If you wish to use **v3**, take a look at [dynamodb-geo-v3].
+
 ## Features
 * **Box Queries:** Return all of the items that fall within a pair of geo points that define a rectangle as projected onto a sphere.
 * **Radius Queries:** Return all of the items that are within a given radius of a geo point.
@@ -258,3 +261,4 @@ The Geohash used in this library is roughly centimeter precision. Therefore, the
 [dynamodb-query]: http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html
 [hashkeylength-tests]: https://github.com/rh389/dynamodb-geo.js/blob/master/test/integration/hashKeyLength.ts
 [choosing-hashkeylength]: #choosing-a-hashkeylength-optimising-for-performance-and-cost
+[dynamodb-geo-v3]: https://github.com/renet/dynamodb-geo-v3
